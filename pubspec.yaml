@@ -1,0 +1,29 @@
+name: flutter_zpl_printer
+description: "Flutter plugin for discovering, connecting to, and printing on Zebra ZPL printers via the official Link-OS SDK. Supports Bluetooth MFi and Wi-Fi on Android & iOS."
+version: 0.0.1
+homepage: https://github.com/minhtri1401/flutter_zpl_printer
+repository: https://github.com/minhtri1401/flutter_zpl_printer
+issue_tracker: https://github.com/minhtri1401/flutter_zpl_printer/issues
+
+environment:
+  sdk: ^3.10.0
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  pigeon: ^22.7.4
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.example.flutter_zpl_printer
+        pluginClass: FlutterZplPrinterPlugin
+      ios:
+        pluginClass: FlutterZplPrinterPlugin

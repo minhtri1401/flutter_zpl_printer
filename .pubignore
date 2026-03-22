@@ -1,0 +1,8 @@
+# Development files not needed in published package
+CLAUDE.md
+plans/
+specs/
+doc/
+docs/
+Users/
+.claude/
