@@ -348,18 +348,24 @@ platform, including web.
 
 ### How does it compare to other Zebra packages?
 
-From each package's pub.dev page on 2026-10-02 (check them for newer releases):
+From each package's pub.dev page and repository on 2026-10-02; the other packages are listed by usage,
+most-used first (check them for newer releases):
 
-| Package | Approach (per its description) | Platforms (pub.dev) | Transports (per its description) |
+| Package | Approach | Platforms (pub.dev) | Transports |
 | :--- | :--- | :--- | :--- |
 | **flutter_zpl_printer** | Pure Dart, no Zebra SDK | Android, iOS, macOS, Windows | Bluetooth LE, Wi-Fi, USB (experimental) |
-| [`zsdk`](https://pub.dev/packages/zsdk) | Zebra Link-OS SDK | Android, iOS | TCP/IP (ZPL and PDF) |
-| [`zebra_printer`](https://pub.dev/packages/zebra_printer) | Zebra Link-OS SDK | Android | Bluetooth, network |
-| [`zebra_printer_cpcl`](https://pub.dev/packages/zebra_printer_cpcl) | Zebra Link-OS SDK | Android | Bluetooth, network (CPCL and ZPL) |
-| [`zebra_usb_printer`](https://pub.dev/packages/zebra_usb_printer) | Android USB | Android | USB |
+| [`zsdk`](https://pub.dev/packages/zsdk) | Zebra Link-OS SDK | Android, iOS | TCP/IP, ZPL and PDF (per its description) |
+| [`zebrautil`](https://pub.dev/packages/zebrautil) ([zebra_printer_utility](https://github.com/anthonyR012/zebra_printer_utility)) | Zebra Link-OS SDK (bundles `ZSDK_ANDROID_API.jar`) | Android, iOS | Bluetooth and Wi-Fi on Android, Bluetooth on iOS (per its README) |
+| [`zebrautility`](https://pub.dev/packages/zebrautility) | Zebra Link-OS SDK (bundles `ZSDK_ANDROID_API.jar`) | Android, iOS | Bluetooth and Wi-Fi on Android, Bluetooth on iOS (per its README) |
+| [`zebra_printer`](https://pub.dev/packages/zebra_printer) | Zebra Link-OS SDK | Android | Bluetooth, network (per its description) |
+| [`zebra_printer_cpcl`](https://pub.dev/packages/zebra_printer_cpcl) | Zebra Link-OS SDK | Android | Bluetooth, network, CPCL and ZPL (per its description) |
+| [`zebra_usb_printer`](https://pub.dev/packages/zebra_usb_printer) | Android USB | Android | USB (per its description) |
 
-If you need a feature only Zebra's SDK provides, an SDK-based package may suit you better. If you want
-iOS Bluetooth without MFi, desktop support, or no proprietary binaries, this package covers that.
+The SDK-based packages are more widely used today, and are a reasonable choice if you need a feature only
+Zebra's SDK provides.
+
+Choose this package if you want iOS Bluetooth LE without MFi, macOS and Windows support, or no
+proprietary binaries in your app.
 
 ---
 

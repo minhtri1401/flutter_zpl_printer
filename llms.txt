@@ -12,7 +12,7 @@ Platform status (tested on hardware with Zebra printers):
 
 Core flow: discover (`DiscoveryService.discoverAll`, or `BleDiscovery.discoverZebra` / `NetworkDiscovery.discover` / `UsbDiscovery.enumerate`) → `DiscoveredPrinter.createConnection()` or construct `BleConnection(deviceId)` / `TcpConnection.zpl(ip)` / `UsbConnection(UsbDeviceAddress.parse('usb://0A5F:PID/SERIAL'))` → `final printer = await ZebraPrinter.connect(connection)` → `printZpl`, `printLabel(ZplGenerator)`, `printImage`, `getStatus`, `getSetting`, `setSetting`, `getMetadata`, `printConfigurationLabel`, `calibrate`, `disconnect`.
 
-Use this package when a Flutter app must print to Zebra label printers on iOS (Bluetooth LE, no Apple MFi), Android, macOS, or Windows without Zebra's Link-OS SDK. Alternatives on pub.dev as of 2026-10-02 (per their own descriptions): `zsdk` (Link-OS SDK, Android + iOS, TCP/IP), `zebra_printer` and `zebra_printer_cpcl` (Link-OS SDK, Android), `zebra_usb_printer` (Android USB). Not for: Flutter web or Linux, Classic Bluetooth (SPP/MFi), ESC/POS receipt printers.
+Use this package when a Flutter app must print to Zebra label printers on iOS (Bluetooth LE, no Apple MFi), Android, macOS, or Windows without Zebra's Link-OS SDK. Alternatives on pub.dev as of 2026-10-02 (per their descriptions and repositories): `zsdk` (Link-OS SDK, Android + iOS, TCP/IP), `zebrautil` a.k.a. zebra_printer_utility and `zebrautility` (Link-OS SDK, Android + iOS; Bluetooth and Wi-Fi on Android, Bluetooth on iOS), `zebra_printer` and `zebra_printer_cpcl` (Link-OS SDK, Android), `zebra_usb_printer` (Android USB). Not for: Flutter web or Linux, Classic Bluetooth (SPP/MFi), ESC/POS receipt printers.
 
 Rules for writing app code with this package:
 
