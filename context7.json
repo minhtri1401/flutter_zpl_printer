@@ -1,0 +1,37 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "flutter_zpl_printer",
+  "description": "Flutter plugin for printing to Zebra label printers over Bluetooth LE, Wi-Fi (TCP 9100), and USB on iOS, Android, macOS, and Windows. Sends ZPL, reads printer status, builds labels with the included flutter_zpl_generator. Pure Dart protocols, no Zebra Link-OS SDK.",
+  "folders": [],
+  "excludeFolders": [
+    "docs",
+    "android",
+    "ios",
+    "macos",
+    "darwin",
+    "windows",
+    "pigeons",
+    "third_party",
+    "tool",
+    "test",
+    "example/android",
+    "example/ios",
+    "example/macos",
+    "example/windows"
+  ],
+  "excludeFiles": ["CLAUDE.md", "DEVELOPING.md"],
+  "rules": [
+    "Import only package:flutter_zpl_printer/flutter_zpl_printer.dart; it re-exports flutter_zpl_generator (ZplGenerator, ZplText, ZplBarcode, ...). Don't add a prefixed generator import.",
+    "Connect with `await ZebraPrinter.connect(connection)` and do not call `connection.open()` first; connect opens it.",
+    "Use TcpConnection.zpl(ip) for Wi-Fi, BleConnection(deviceId) or a DiscoveredPrinter.createConnection() for Bluetooth LE, and UsbConnection(UsbDeviceAddress.parse('usb://0A5F:PID/SERIAL')) for USB.",
+    "USB is experimental (untested on macOS and Android, failing on Windows, impossible on iOS). Prefer Bluetooth LE or Wi-Fi and never make USB the only option.",
+    "Call printer.getStatus() before printing and surface isPaperOut, isHeadOpen, isRibbonOut, isPaused to the user.",
+    "Send one command at a time per connection; overlapping requests can receive each other's replies, especially over Bluetooth.",
+    "Print images with printer.printImage(bytes, targetWidth: ...) or printer.printLabel(ZplGenerator(...)) using ZplImageDownload + ZplImageRecall.",
+    "Sgd.doCommand waits for a reply; for actions that never reply (device.reset) write '! U1 do \"device.reset\" \"\"\\r\\n' with connection.write instead.",
+    "Errors are ConnectionException or subclasses (ConnectionTimeoutException, ConnectionClosedException, ReconnectSuccessException, Usb*Exception). Show UsbDeviceBusyException.remediation to users.",
+    "PrinterPrintMode is the print mode reported by getStatus(); ZplPrintMode is flutter_zpl_generator's label setting.",
+    "On Android request bluetoothScan, bluetoothConnect, and location permissions before scanning; iOS and macOS need NSBluetoothAlwaysUsageDescription, and sandboxed macOS apps need network.client, network.server, and device.bluetooth entitlements."
+  ],
+  "previousVersions": [{ "tag": "v0.1.1" }]
+}

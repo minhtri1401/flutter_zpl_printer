@@ -32,6 +32,14 @@
   over the raw bitmap with CRC-16/CCITT-FALSE. Matches `flutter_zpl_generator`'s implementation.
   `Z64Compressor.crc16` now returns the XMODEM value and accepts any `List<int>`.
 
+### Documentation
+
+- README opens with a direct answer and adds an **FAQ** (Link-OS SDK, iOS without MFi, supported
+  printers, images and PDFs, status, USB, web) and a comparison with other Zebra packages.
+- pub.dev **Example** tab now shows `example/example.md` (usage snippets) instead of the app shell.
+- Library-level API docs with a quick start; `context7.json` for coding-agent documentation indexes.
+- pub.dev topics: `labels` replaces `usb` (USB is experimental).
+
 ### Example
 
 - New **Print image** section: prints a generated test picture via `printImage`, via

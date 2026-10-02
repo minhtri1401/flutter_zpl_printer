@@ -1,7 +1,40 @@
-/// Pure-Dart library for Zebra label printers via BLE, TCP, and USB.
+/// Print to Zebra label printers from Flutter over Bluetooth LE, Wi-Fi
+/// (TCP port 9100), or USB, on iOS, Android, macOS, and Windows.
 ///
-/// No Link-OS SDK dependency. Communicates directly using Zebra's native
-/// printer protocols (SGD, ZPL status, BLE characteristics).
+/// The printer protocols (SGD, ZPL `~HS` status, Zebra BLE GATT, USB printer
+/// class) are implemented in Dart: there is no dependency on Zebra's Link-OS
+/// SDK and no Apple MFi requirement. This library also re-exports
+/// `flutter_zpl_generator`, so one import covers building and printing labels.
+///
+/// ```dart
+/// import 'package:flutter_zpl_printer/flutter_zpl_printer.dart';
+///
+/// // Find a printer (or build a BleConnection / TcpConnection yourself).
+/// final found = await BleDiscovery.discoverZebra().first;
+/// final printer = await ZebraPrinter.connect(found.createConnection());
+///
+/// final status = await printer.getStatus();
+/// if (status.isReadyToPrint) {
+///   await printer.printLabel(ZplGenerator(commands: [
+///     ZplText(x: 40, y: 40, text: 'Hello from Flutter'),
+///     ZplBarcode(x: 40, y: 100, data: '123456789', height: 80),
+///   ]));
+/// }
+/// await printer.disconnect();
+/// ```
+///
+/// Start with:
+/// - [ZebraPrinter]: connect, print (`printZpl`, `printLabel`, `printImage`),
+///   read status and settings.
+/// - [DiscoveryService], [BleDiscovery], [NetworkDiscovery], [UsbDiscovery]:
+///   find printers.
+/// - [BleConnection], [TcpConnection], [UsbConnection]: one class per
+///   transport, all sharing the [Connection] API.
+/// - [PrinterStatus]: parsed `~HS` status (paper out, head open, ...).
+/// - [ConnectionException] and subclasses: every error the library throws.
+///
+/// Bluetooth LE and Wi-Fi are tested on real printers on all four platforms.
+/// USB is experimental. See the README's platform table and known issues.
 library;
 
 // Label building (re-exported so one import covers building and printing).

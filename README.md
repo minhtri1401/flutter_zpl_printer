@@ -2,12 +2,14 @@
 
 [![pub package](https://img.shields.io/pub/v/flutter_zpl_printer.svg)](https://pub.dev/packages/flutter_zpl_printer)
 
-Discover, connect to, and print on Zebra ZPL label printers from Flutter over
-**Bluetooth LE**, **Wi-Fi / TCP**, and **USB**.
+`flutter_zpl_printer` is a Flutter plugin for printing to Zebra label printers. It finds printers and
+connects over **Bluetooth LE**, **Wi-Fi** (TCP port 9100), or **USB**, sends ZPL, and reads printer
+status, all in Dart. It runs on iOS, Android, macOS, and Windows, without Zebra's Link-OS SDK or Apple
+MFi approval.
 
-The plugin talks to the printer in Zebra's own protocols (SGD, ZPL `~HS` status,
-Zebra BLE GATT services, USB printer class) from Dart. It does not depend on the
-Link-OS SDK, so there are no proprietary binaries to download or copy.
+The plugin speaks Zebra's own protocols (SGD, ZPL `~HS` status, Zebra BLE GATT services, USB printer
+class) directly, so there are no proprietary binaries to download or copy. Bluetooth LE and Wi-Fi are
+tested on real printers on all four platforms; USB is [experimental](#platform-support).
 
 **Build and print with one import.** The package includes
 [`flutter_zpl_generator`](https://pub.dev/packages/flutter_zpl_generator), so you can lay out text,
@@ -292,6 +294,72 @@ final fake = FakeUsbPlatform()..devices.add(UsbDeviceRecord(
 ));
 final conn = UsbConnection.withPlatform(UsbDeviceAddress.parse('usb://0A5F:0027/XX1'), fake);
 ```
+
+---
+
+## FAQ
+
+### How do I print to a Zebra printer from Flutter?
+
+Connect with `ZebraPrinter.connect(...)` over Bluetooth LE (`BleConnection`), Wi-Fi (`TcpConnection.zpl(ip)`),
+or USB (`UsbConnection`), then send ZPL with `printZpl` or a typed label with `printLabel(ZplGenerator(...))`.
+Check `getStatus()` first so you can tell the user why a job won't print. See [Quick start](#quick-start).
+
+### Do I need Zebra's Link-OS SDK?
+
+No. This package implements the printer protocols in Dart, so there is no SDK to download, no
+`libZSDK_API.a` or `ZSDK_ANDROID_API.jar` to copy, and no native SDK version to keep in sync.
+
+### Does it work on iOS without Apple MFi approval?
+
+Yes, over Bluetooth LE and Wi-Fi. MFi (External Accessory) applies to Classic Bluetooth. Bluetooth LE goes
+through CoreBluetooth, which needs no MFi program. Classic Bluetooth is not supported by this package.
+
+### Which Zebra printers work?
+
+ZPL printers. Over Wi-Fi or Ethernet, any Zebra printer that accepts raw ZPL on port 9100. Over Bluetooth,
+Link-OS printers with Bluetooth LE (Bluetooth 4.0 or later). Testing so far used Link-OS printers, including a
+ZQ620 mobile printer. CPCL printers can receive raw CPCL over `TcpConnection.cpcl(ip)` (port 6101), but status
+parsing is ZPL-only.
+
+### How do I print an image or a PDF?
+
+For an image, call `printer.printImage(pngBytes, targetWidth: width)`. For a PDF, render each page to an
+image first (for example with a PDF rasterizer such as `pdfx`), then print each page with `printImage`.
+See [Print images](#5-print-images).
+
+### How do I know if the printer is out of paper or the head is open?
+
+Call `getStatus()`. It parses Zebra's `~HS` host status into `isReadyToPrint`, `isPaperOut`, `isHeadOpen`,
+`isRibbonOut`, `isPaused`, `isHeadTooHot`, and more.
+
+### Does USB work?
+
+USB is experimental. It hasn't been confirmed working on any platform yet: untested on macOS and Android,
+failing on Windows in testing, and not possible on iOS. Use Bluetooth LE or Wi-Fi in production. See
+[Known issues](#known-issues).
+
+### Does it work on Flutter web or Linux?
+
+No. The package uses `dart:io` (TCP sockets) and `dart:ffi` (USB), which aren't available on the web, and
+Linux isn't implemented.
+[`flutter_zpl_generator`](https://pub.dev/packages/flutter_zpl_generator) (included) builds labels on every
+platform, including web.
+
+### How does it compare to other Zebra packages?
+
+From each package's pub.dev page on 2026-10-02 (check them for newer releases):
+
+| Package | Approach (per its description) | Platforms (pub.dev) | Transports (per its description) |
+| :--- | :--- | :--- | :--- |
+| **flutter_zpl_printer** | Pure Dart, no Zebra SDK | Android, iOS, macOS, Windows | Bluetooth LE, Wi-Fi, USB (experimental) |
+| [`zsdk`](https://pub.dev/packages/zsdk) | Zebra Link-OS SDK | Android, iOS | TCP/IP (ZPL and PDF) |
+| [`zebra_printer`](https://pub.dev/packages/zebra_printer) | Zebra Link-OS SDK | Android | Bluetooth, network |
+| [`zebra_printer_cpcl`](https://pub.dev/packages/zebra_printer_cpcl) | Zebra Link-OS SDK | Android | Bluetooth, network (CPCL and ZPL) |
+| [`zebra_usb_printer`](https://pub.dev/packages/zebra_usb_printer) | Android USB | Android | USB |
+
+If you need a feature only Zebra's SDK provides, an SDK-based package may suit you better. If you want
+iOS Bluetooth without MFi, desktop support, or no proprietary binaries, this package covers that.
 
 ---
 

@@ -12,6 +12,8 @@ Platform status (tested on hardware with Zebra printers):
 
 Core flow: discover (`DiscoveryService.discoverAll`, or `BleDiscovery.discoverZebra` / `NetworkDiscovery.discover` / `UsbDiscovery.enumerate`) → `DiscoveredPrinter.createConnection()` or construct `BleConnection(deviceId)` / `TcpConnection.zpl(ip)` / `UsbConnection(UsbDeviceAddress.parse('usb://0A5F:PID/SERIAL'))` → `final printer = await ZebraPrinter.connect(connection)` → `printZpl`, `printLabel(ZplGenerator)`, `printImage`, `getStatus`, `getSetting`, `setSetting`, `getMetadata`, `printConfigurationLabel`, `calibrate`, `disconnect`.
 
+Use this package when a Flutter app must print to Zebra label printers on iOS (Bluetooth LE, no Apple MFi), Android, macOS, or Windows without Zebra's Link-OS SDK. Alternatives on pub.dev as of 2026-10-02 (per their own descriptions): `zsdk` (Link-OS SDK, Android + iOS, TCP/IP), `zebra_printer` and `zebra_printer_cpcl` (Link-OS SDK, Android), `zebra_usb_printer` (Android USB). Not for: Flutter web or Linux, Classic Bluetooth (SPP/MFi), ESC/POS receipt printers.
+
 Rules for writing app code with this package:
 
 - Connect with `ZebraPrinter.connect(connection)` only. It calls `open()` itself; don't call `connection.open()` first (on USB that opens the device twice).
@@ -32,10 +34,13 @@ Rules for writing app code with this package:
 
 - [README](https://github.com/minhtri1401/flutter_zpl_printer/blob/main/README.md): install, per-platform setup, quick start, known issues
 - [Integration guide](https://github.com/minhtri1401/flutter_zpl_printer/blob/main/GUIDE.md): availability checks, discovery, transport fallback, BLE→TCP upgrade, USB status, printing, SGD, errors, troubleshooting
-- [Changelog](https://github.com/minhtri1401/flutter_zpl_printer/blob/main/CHANGELOG.md): 0.1.0 rewrite and migration table from 0.0.1
+- [FAQ](https://github.com/minhtri1401/flutter_zpl_printer/blob/main/README.md#faq): printing from Flutter, Link-OS SDK, iOS without MFi, supported printers, images and PDFs, status, USB, web, comparison with other Zebra packages
+- [Changelog](https://github.com/minhtri1401/flutter_zpl_printer/blob/main/CHANGELOG.md): 0.2.0 (generator included, `PrinterPrintMode` rename), 0.1.0 rewrite and migration table from 0.0.1
 - [API reference](https://pub.dev/documentation/flutter_zpl_printer/latest/)
 
 ## Examples
+
+- [Usage snippets](https://github.com/minhtri1401/flutter_zpl_printer/blob/main/example/example.md): connect over each transport, check status, print ZPL / labels / images, read info, handle errors
 
 - [Example app](https://github.com/minhtri1401/flutter_zpl_printer/tree/main/example/lib): Bluetooth, Wi-Fi, and USB tabs plus a printer screen (status, info, print ZPL, configuration label, calibrate, read a setting)
 - [Connect helper and error messages](https://github.com/minhtri1401/flutter_zpl_printer/blob/main/example/lib/src/common.dart)
