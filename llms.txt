@@ -19,6 +19,7 @@ Rules for writing app code with this package:
 - Read single-line settings. Multi-line replies such as `device.host_status` can leave data in the Bluetooth buffer that corrupts the next read (seen on ZQ620 firmware V85.20).
 - `Sgd.doCommand` / `printer.doCommand` wait for a reply. For actions that never reply (e.g. `device.reset`), write `! U1 do "<action>" "<arg>"\r\n` with `connection.write` instead.
 - Printers answer `?` for unsupported settings; treat `?` and empty strings as "unknown".
+- Print images by building ZPL with `flutter_zpl_generator` (`ZplImageDownload` + `ZplImageRecall` in a `ZplGenerator`, default uncompressed, threshold dithering) and sending it with `printZpl`. Avoid this package's `printImage` / `GraphicsUtil.printImage` in 0.1.x: their default Z64 checksum is wrong (computed over raw bitmap, not the Base64 text), so printers can drop the image; if used, pass `useCompression: false`. Import the generator with a prefix: both packages export `ZplPrintMode`.
 - Errors are `ConnectionException` or subclasses: `ConnectionTimeoutException`, `ConnectionClosedException`, `ReconnectSuccessException` (from `ReconnectableConnection`; the library never re-sends a job), and 11 `Usb*Exception` types. Show `UsbDeviceBusyException.remediation` to users.
 - When a printer is reachable several ways, zPrint tries USB, then TCP, then BLE, and falls back on failure. Ping TCP/USB with `getStatus()` after connecting.
 - Use keys from the `PrinterSgdKey` enum (`.value`) instead of hand-typed SGD strings.

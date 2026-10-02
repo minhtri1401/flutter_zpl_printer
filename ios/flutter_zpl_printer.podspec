@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'flutter_zpl_printer'
-  s.version          = '0.1.0'
+  s.version          = '0.1.1'
   s.summary          = 'Flutter plugin for Zebra ZPL label printers (BLE, TCP, USB).'
   s.description      = <<-DESC
 Discover, connect to, and print on Zebra ZPL label printers over Bluetooth LE, Wi-Fi/TCP, and USB.

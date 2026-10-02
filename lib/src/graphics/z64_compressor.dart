@@ -11,6 +11,10 @@ class Z64Compressor {
   /// Compress bitmap data using Z64 encoding.
   ///
   /// Returns `:Z64:{base64}:{crc16hex}` string.
+  ///
+  /// **Known issue (0.1.x):** the CRC is computed over [bitmapData], but
+  /// Zebra's ZPL II Programming Guide specifies it over the Base64-encoded
+  /// data. Printers that verify it may reject the download.
   static String compress(Uint8List bitmapData) {
     // Deflate
     final deflated = zlib.encode(bitmapData);

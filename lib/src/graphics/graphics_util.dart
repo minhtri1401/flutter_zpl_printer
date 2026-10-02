@@ -16,6 +16,12 @@ class GraphicsUtil {
   ///
   /// Converts to GRF and sends a `^GF` command. Uses Z64 compression
   /// by default to reduce transfer size.
+  ///
+  /// **Known issue (0.1.x):** the default Z64 compression computes its CRC
+  /// over the raw bitmap, but Zebra's ZPL II Programming Guide requires it
+  /// over the Base64-encoded data, so a printer that checks the CRC can drop
+  /// the image. Prefer building image labels with `flutter_zpl_generator`
+  /// and sending them with `printZpl`, or pass `useCompression: false`.
   static Future<void> printImage(
     Connection connection,
     Uint8List imageBytes, {

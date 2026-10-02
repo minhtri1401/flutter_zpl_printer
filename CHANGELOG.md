@@ -1,3 +1,15 @@
+## 0.1.1
+
+### Documentation
+
+- **Print images with [`flutter_zpl_generator`](https://pub.dev/packages/flutter_zpl_generator).**
+  The README and guide now show the tested path: build the label with `ZplImageDownload` +
+  `ZplImageRecall` and send it with `printZpl`.
+- **Known issue documented: Z64 checksum.** `printImage` / `GraphicsUtil.printImage` compress with Z64
+  by default and compute the CRC over the raw bitmap instead of the Base64 data, as Zebra's manual
+  specifies, so a printer that checks it can drop the image. Use `flutter_zpl_generator`, or pass
+  `useCompression: false`. Bluetooth LE / Wi-Fi printing and `printZpl` are not affected.
+
 ## 0.1.0
 
 **Breaking: full rewrite.** The plugin no longer wraps Zebra's Link-OS SDK. It now

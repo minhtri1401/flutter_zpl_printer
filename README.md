@@ -41,7 +41,7 @@ Wi-Fi for production printing.
 
 ```yaml
 dependencies:
-  flutter_zpl_printer: ^0.1.0
+  flutter_zpl_printer: ^0.1.1
 ```
 
 ```dart
@@ -177,6 +177,48 @@ try {
 }
 ```
 
+### 5. Print images
+
+**Use [`flutter_zpl_generator`](https://pub.dev/packages/flutter_zpl_generator) to turn images into ZPL**,
+then send the result with `printZpl`. This is the image path that has been tested on real printers.
+This package's own `printImage` / `GraphicsUtil` has a [known issue](#image-compression-z64) in 0.1.x.
+
+```dart
+import 'dart:typed_data';
+
+import 'package:flutter_zpl_generator/flutter_zpl_generator.dart' as zpl; // prefix: both packages define ZplPrintMode
+import 'package:flutter_zpl_printer/flutter_zpl_printer.dart';
+
+Future<void> printPicture(ZebraPrinter printer, Uint8List pngBytes) async {
+  // Print width in dots, as reported by the printer (fallback: 384 dots,
+  // a 2-inch 203 dpi mobile printer).
+  final raw = await printer.getSetting(PrinterSgdKey.ezplPrintWidth.value);
+  final width = int.tryParse(raw.trim()) ?? 384;
+
+  final label = await zpl.ZplGenerator(
+    config: zpl.ZplConfiguration(
+      printWidth: width,
+      printMode: zpl.ZplPrintMode.tearOff,
+    ),
+    autoLabelLengthFromFirstImage: true,
+    commands: [
+      zpl.ZplImageDownload(
+        image: pngBytes,
+        targetWidth: width,
+        ditheringAlgorithm: zpl.ZplDitheringAlgorithm.threshold,
+      ),
+      const zpl.ZplImageRecall(), // x: 0, y: 0, graphicName: 'IMG'
+    ],
+  ).build();
+
+  await printer.printZpl(label);
+}
+```
+
+`ZplImageDownload` sends uncompressed hex by default (`compression: ZplImageCompression.none`),
+which every Zebra printer accepts. Threshold dithering is what the tested app uses: zPrint found
+that Floyd-Steinberg's dense dot coverage can trip the print head's thermal protection on a ZQ620.
+
 The [example app](example/lib/main.dart) shows all three transports end to end. The
 [integration guide](GUIDE.md) covers the production details.
 
@@ -194,7 +236,8 @@ The [example app](example/lib/main.dart) shows all three transports end to end. 
 - **SGD (Set/Get/Do)**: `Sgd.get`, `Sgd.set`, `Sgd.doCommand`, and a catalog of verified keys in `PrinterSgdKey`.
 - **Files and formats**: list, store, and delete files on `E:` / `R:`; store formats and print them with
   `^FN` field data (`FormatUtil.printStoredFormat`).
-- **Graphics**: convert PNG/JPEG to GRF or compressed Z64 and print or store it (`GraphicsUtil`).
+- **Graphics**: convert PNG/JPEG to GRF or Z64 and print or store it (`GraphicsUtil`). For printing images,
+  prefer [`flutter_zpl_generator`](#5-print-images); see the [Z64 known issue](#image-compression-z64).
 - **More utilities**: `FontUtil`, `AlertUtil`, `ProfileUtil` (backup / restore), `FirmwareUtil`, `ZplSanitizer`.
 
 ### SGD example
@@ -277,6 +320,21 @@ and the exception text on the [issue tracker](https://github.com/minhtri1401/flu
 
 Android USB needs `libusb-1.0.so` built per ABI with the NDK. 0.1.0 does not ship those binaries,
 so Android USB calls fail with `UsbLibLoadException`. See `tool/fetch_libusb.sh`.
+
+### Image compression (Z64)
+
+`printer.printImage(...)` and `GraphicsUtil.printImage(...)` compress images with Z64 by default, and
+0.1.x computes the Z64 checksum over the raw bitmap. Zebra's ZPL II Programming Guide says the CRC must
+be "calculated over the :encoded_data field" and that "a CRC mismatch is treated as an aborted
+download", so a printer that checks it can drop the image. This path has not been tested on hardware.
+
+Workarounds:
+
+- **Recommended:** build image labels with `flutter_zpl_generator` and send them with `printZpl`
+  ([example](#5-print-images)).
+- Or pass `useCompression: false` to `GraphicsUtil.printImage` to send uncompressed hex.
+
+Bluetooth LE / Wi-Fi printing, `printZpl`, and images built with `flutter_zpl_generator` are not affected.
 
 ### Other limitations
 
