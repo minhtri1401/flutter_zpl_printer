@@ -1,7 +1,7 @@
 {
   "$schema": "https://context7.com/schema/context7.json",
   "projectTitle": "flutter_zpl_printer",
-  "description": "Flutter plugin for printing to Zebra label printers over Bluetooth LE, Wi-Fi (TCP 9100), and USB on iOS, Android, macOS, and Windows. Sends ZPL, reads printer status, builds labels with the included flutter_zpl_generator. Pure Dart protocols, no Zebra Link-OS SDK.",
+  "description": "Flutter plugin to print to Zebra label printers over Bluetooth LE, Wi-Fi, and USB on iOS, Android, macOS, and Windows. Sends ZPL, reads status, builds labels. No Link-OS SDK.",
   "folders": [],
   "excludeFolders": [
     "docs",
@@ -19,7 +19,10 @@
     "example/macos",
     "example/windows"
   ],
-  "excludeFiles": ["CLAUDE.md", "DEVELOPING.md"],
+  "excludeFiles": [
+    "CLAUDE.md",
+    "DEVELOPING.md"
+  ],
   "rules": [
     "Import only package:flutter_zpl_printer/flutter_zpl_printer.dart; it re-exports flutter_zpl_generator (ZplGenerator, ZplText, ZplBarcode, ...). Don't add a prefixed generator import.",
     "Connect with `await ZebraPrinter.connect(connection)` and do not call `connection.open()` first; connect opens it.",
@@ -33,5 +36,9 @@
     "PrinterPrintMode is the print mode reported by getStatus(); ZplPrintMode is flutter_zpl_generator's label setting.",
     "On Android request bluetoothScan, bluetoothConnect, and location permissions before scanning; iOS and macOS need NSBluetoothAlwaysUsageDescription, and sandboxed macOS apps need network.client, network.server, and device.bluetooth entitlements."
   ],
-  "previousVersions": [{ "tag": "v0.1.1" }]
+  "previousVersions": [
+    {
+      "tag": "v0.1.1"
+    }
+  ]
 }
