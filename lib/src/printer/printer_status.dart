@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import '../connection/connection.dart';
 import '../connection/response_validators.dart';
 import '../exceptions/connection_exception.dart';
-import '../models/zpl_print_mode.dart';
+import '../models/printer_print_mode.dart';
 
 /// Zebra printer status.
 ///
@@ -23,7 +23,7 @@ class PrinterStatus {
   final int labelLengthInDots;
   final int numberOfFormatsInReceiveBuffer;
   final int labelsRemainingInBatch;
-  final ZplPrintMode printMode;
+  final PrinterPrintMode printMode;
 
   const PrinterStatus({
     required this.isReadyToPrint,
@@ -94,7 +94,7 @@ class PrinterStatus {
         fields[17].trim().isNotEmpty ? fields[17].trim() : '2';
     final labelsRemainingInBatch = int.tryParse(fields[20].trim()) ?? 0;
 
-    final printMode = ZplPrintMode.fromHsChar(printModeChar);
+    final printMode = PrinterPrintMode.fromHsChar(printModeChar);
 
     // SDK: isReadyToPrint = NOT(paperOut OR paused OR bufferFull OR headTooHot OR headOpen OR ribbonOut)
     final isReadyToPrint = !isPaperOut &&

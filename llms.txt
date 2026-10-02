@@ -10,7 +10,7 @@ Platform status (tested on hardware with Zebra printers):
 | Wi-Fi / TCP | works | works | works | works |
 | USB | not possible (no USB host on iOS) | not tested | fails in testing, cause unconfirmed | not tested; needs libusb-1.0.so, not bundled |
 
-Core flow: discover (`DiscoveryService.discoverAll`, or `BleDiscovery.discoverZebra` / `NetworkDiscovery.discover` / `UsbDiscovery.enumerate`) → `DiscoveredPrinter.createConnection()` or construct `BleConnection(deviceId)` / `TcpConnection.zpl(ip)` / `UsbConnection(UsbDeviceAddress.parse('usb://0A5F:PID/SERIAL'))` → `final printer = await ZebraPrinter.connect(connection)` → `printZpl`, `getStatus`, `getSetting`, `setSetting`, `getMetadata`, `printConfigurationLabel`, `calibrate`, `disconnect`.
+Core flow: discover (`DiscoveryService.discoverAll`, or `BleDiscovery.discoverZebra` / `NetworkDiscovery.discover` / `UsbDiscovery.enumerate`) → `DiscoveredPrinter.createConnection()` or construct `BleConnection(deviceId)` / `TcpConnection.zpl(ip)` / `UsbConnection(UsbDeviceAddress.parse('usb://0A5F:PID/SERIAL'))` → `final printer = await ZebraPrinter.connect(connection)` → `printZpl`, `printLabel(ZplGenerator)`, `printImage`, `getStatus`, `getSetting`, `setSetting`, `getMetadata`, `printConfigurationLabel`, `calibrate`, `disconnect`.
 
 Rules for writing app code with this package:
 
@@ -19,7 +19,9 @@ Rules for writing app code with this package:
 - Read single-line settings. Multi-line replies such as `device.host_status` can leave data in the Bluetooth buffer that corrupts the next read (seen on ZQ620 firmware V85.20).
 - `Sgd.doCommand` / `printer.doCommand` wait for a reply. For actions that never reply (e.g. `device.reset`), write `! U1 do "<action>" "<arg>"\r\n` with `connection.write` instead.
 - Printers answer `?` for unsupported settings; treat `?` and empty strings as "unknown".
-- Print images by building ZPL with `flutter_zpl_generator` (`ZplImageDownload` + `ZplImageRecall` in a `ZplGenerator`, default uncompressed, threshold dithering) and sending it with `printZpl`. This package's `printImage` / `GraphicsUtil.printImage` are not yet verified on a printer: from 0.1.2 they default to uncompressed hex and Z64 (`useCompression: true`) uses CRC-16/XMODEM over the Base64 text per Zebra's spec; on 0.1.0–0.1.1 the default Z64 checksum is wrong, so pass `useCompression: false`. Import the generator with a prefix: both packages export `ZplPrintMode`.
+- This package depends on and re-exports `flutter_zpl_generator`: one import gives `ZplGenerator`, `ZplText`, `ZplBarcode`, `ZplImageDownload`, etc. Send a built label with `printer.printLabel(ZplGenerator(...))`. Don't add a prefixed generator import.
+- Print images with `printer.printImage(bytes, x:, y:, targetWidth:)`; from 0.2.0 it builds a `~DG` download + `^XG` recall with the generator (uncompressed hex, threshold dithering), the hardware-tested path. `GraphicsUtil.printImage` (inline `^GF`) is lower level and not yet verified on a printer.
+- `PrinterPrintMode` is the print mode the printer reports in `getStatus().printMode` (was `ZplPrintMode` before 0.2.0). `ZplPrintMode` is now the generator's enum for the mode you set in `ZplConfiguration`.
 - Errors are `ConnectionException` or subclasses: `ConnectionTimeoutException`, `ConnectionClosedException`, `ReconnectSuccessException` (from `ReconnectableConnection`; the library never re-sends a job), and 11 `Usb*Exception` types. Show `UsbDeviceBusyException.remediation` to users.
 - When a printer is reachable several ways, zPrint tries USB, then TCP, then BLE, and falls back on failure. Ping TCP/USB with `getStatus()` after connecting.
 - Use keys from the `PrinterSgdKey` enum (`.value`) instead of hand-typed SGD strings.

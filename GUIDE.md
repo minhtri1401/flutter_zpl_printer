@@ -43,7 +43,7 @@ DiscoveredPrinter.createConnection()  ─or─  BleConnection / TcpConnection / 
 ZebraPrinter.connect(connection)
         │  ZebraPrinter
         ▼
-printZpl · getStatus · getSetting · setSetting · getMetadata · calibrate · ...
+printZpl · printLabel · printImage · getStatus · getSetting · setSetting · getMetadata · ...
 ```
 
 - A **`Connection`** moves bytes over one transport. Every transport has the same API.
@@ -412,43 +412,52 @@ if (!s.isReadyToPrint) {
 await printer.printZpl(zpl);
 ```
 
-To build the ZPL itself, see [`flutter_zpl_generator`](https://pub.dev/packages/flutter_zpl_generator).
+### Build labels in Dart
 
-### Images: use flutter_zpl_generator
-
-Build image labels with [`flutter_zpl_generator`](https://pub.dev/packages/flutter_zpl_generator)
-and send them with `printZpl`. This is how zPrint prints images on real printers:
+This package includes [`flutter_zpl_generator`](https://pub.dev/packages/flutter_zpl_generator) and
+re-exports it, so the same import gives you a typed label builder. Send a built label with `printLabel`:
 
 ```dart
-import 'dart:typed_data';
+await printer.printLabel(ZplGenerator(
+  config: const ZplConfiguration(printWidth: 406),
+  commands: [
+    ZplText(x: 40, y: 40, text: 'Order #1042'),
+    ZplBarcode(x: 40, y: 100, data: '1042', height: 80),
+  ],
+));
+```
 
-import 'package:flutter_zpl_generator/flutter_zpl_generator.dart' as zpl; // prefix: both packages define ZplPrintMode
-import 'package:flutter_zpl_printer/flutter_zpl_printer.dart';
+`printLabel(label)` is `printZpl(await label.build())`. For thousands of labels with the same layout,
+use the generator's templates and send each bound result with `printZpl`. See its README.
 
-Future<void> printPicture(ZebraPrinter printer, Uint8List pngBytes) async {
-  // Print width in dots, as reported by the printer (fallback: 384 dots,
-  // a 2-inch 203 dpi mobile printer).
-  final raw = await printer.getSetting(PrinterSgdKey.ezplPrintWidth.value);
-  final width = int.tryParse(raw.trim()) ?? 384;
+Two print-mode types, two meanings:
 
-  final label = await zpl.ZplGenerator(
-    config: zpl.ZplConfiguration(
-      printWidth: width,
-      printMode: zpl.ZplPrintMode.tearOff,
-    ),
-    autoLabelLengthFromFirstImage: true,
-    commands: [
-      zpl.ZplImageDownload(
-        image: pngBytes,
-        targetWidth: width,
-        ditheringAlgorithm: zpl.ZplDitheringAlgorithm.threshold,
-      ),
-      const zpl.ZplImageRecall(), // x: 0, y: 0, graphicName: 'IMG'
-    ],
-  ).build();
+- `ZplPrintMode` (from the generator) is the mode you **set** in a label's `ZplConfiguration`.
+- `PrinterPrintMode` (this package; called `ZplPrintMode` before 0.2.0) is the mode the printer
+  **reports** in `getStatus().printMode`.
 
-  await printer.printZpl(label);
-}
+### Images
+
+```dart
+await printer.printImage(pngBytes, targetWidth: 400);
+```
+
+`printImage` builds the label with the generator: `ZplImageDownload` (a `~DG` download, uncompressed hex)
+before `^XA`, then `ZplImageRecall` (`^XG`) to place it. That's how zPrint prints images on real printers.
+For full control, build it yourself:
+
+```dart
+final raw = await printer.getSetting(PrinterSgdKey.ezplPrintWidth.value);
+final width = int.tryParse(raw.trim()) ?? 384; // dots; 384 = 2-inch 203 dpi
+
+await printer.printLabel(ZplGenerator(
+  config: ZplConfiguration(printWidth: width, printMode: ZplPrintMode.tearOff),
+  autoLabelLengthFromFirstImage: true,
+  commands: [
+    ZplImageDownload(image: pngBytes, targetWidth: width, ditheringAlgorithm: ZplDitheringAlgorithm.threshold),
+    const ZplImageRecall(), // x: 0, y: 0, graphicName: 'IMG'
+  ],
+));
 ```
 
 Why these settings, from zPrint:
@@ -456,17 +465,16 @@ Why these settings, from zPrint:
 - **`~DG` download, then `^XG` recall.** `ZplImageDownload` puts the graphic in printer memory
   before `^XA`, which Link-OS mobile printers (ZQ620 and others) need. `ZplImageRecall` places it.
 - **Uncompressed hex** (the default, `ZplImageCompression.none`). Every Zebra printer accepts it.
-- **Threshold dithering.** Floyd-Steinberg's dense dot coverage can trip the print head's thermal
-  protection on the ZQ620.
+- **Threshold dithering** (also `printImage`'s default). Floyd-Steinberg's dense dot coverage can trip
+  the print head's thermal protection on the ZQ620.
 - **Tear-off mode** (`ZplPrintMode.tearOff`). A mobile printer left in applicator or cutter mode
   can hold labels instead of printing them.
 - **`autoLabelLengthFromFirstImage`** sets the label length to the image height.
 
-> **This package's `printer.printImage(...)` / `GraphicsUtil.printImage(...)` haven't been verified
-> on a printer yet.** Prefer `flutter_zpl_generator` for production. On 0.1.0–0.1.1 they default to
-> Z64 with a wrong checksum (pass `useCompression: false`). From 0.1.2 they default to uncompressed
-> hex, and Z64 (`useCompression: true`) follows Zebra's spec. The example app's **Print image**
-> section prints all three variants for comparison. See [Known issues](README.md#image-compression-z64).
+> **Lower level: `GraphicsUtil.printImage`** sends an inline `^GF` graphic instead. It hasn't been
+> verified on a printer yet. It defaults to uncompressed hex, and Z64 (`useCompression: true`) follows
+> Zebra's spec from 0.2.0. On 0.1.0–0.1.1 it defaulted to Z64 with a wrong checksum. See
+> [Known issues](README.md#image-compression-z64).
 
 ### Printer info in one call
 
@@ -629,5 +637,5 @@ subclass `Connection` to record writes and return canned replies.
 | USB printer not listed (macOS) | Sandboxed app without `com.apple.security.device.usb`? Try `includeNonZebra: true`. |
 | USB on Windows fails | See [section 5](#windows-what-the-code-does-and-what-might-be-wrong). Use Wi-Fi or Bluetooth for now. |
 | `UsbLibLoadException` | libusb isn't next to the app (Windows) or wasn't built into the APK (Android). |
-| Image prints blank or not at all | Using `printImage` / `GraphicsUtil.printImage`? Switch to `flutter_zpl_generator` ([section 6](#images-use-flutter_zpl_generator)). On 0.1.0–0.1.1, pass `useCompression: false` or upgrade to 0.1.2. |
+| Image prints blank or not at all | On 0.1.0–0.1.1, `printImage` used Z64 with a wrong checksum: upgrade to 0.2.0 (generator-based `printImage`, [section 6](#images)). Using `GraphicsUtil.printImage`? Try `printImage` instead. |
 | A reset or other action hangs | You used `doCommand` for an action that never replies. Write the packet directly ([section 7](#actions-do-commands)). |

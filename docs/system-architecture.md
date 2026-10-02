@@ -415,7 +415,7 @@ All operations take an abstract `Connection` parameter. Swap TCP for BLE or mult
 
 **LinkOsVersion** — Parsed firmware version with major/minor/patch
 
-**ZplPrintMode** — Print speed and darkness settings
+**PrinterPrintMode** — print mode reported by `~HS` (was `ZplPrintMode` before 0.2.0)
 
 **StorageInfo** — Free/used space on E:, R: drives
 

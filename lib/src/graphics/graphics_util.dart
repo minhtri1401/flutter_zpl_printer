@@ -21,9 +21,10 @@ class GraphicsUtil {
   /// Bluetooth). Z64 follows Zebra's specification but has not been verified
   /// on a printer yet, so it is off by default.
   ///
-  /// For production image printing, `flutter_zpl_generator` is the path
-  /// tested on hardware: build the label with it and send it with
-  /// `printZpl`.
+  /// For production image printing, use `ZebraPrinter.printImage` or
+  /// `ZebraPrinter.printLabel` instead: they build the label with
+  /// `flutter_zpl_generator` (`~DG` download + `^XG` recall), the path tested
+  /// on hardware.
   static Future<void> printImage(
     Connection connection,
     Uint8List imageBytes, {

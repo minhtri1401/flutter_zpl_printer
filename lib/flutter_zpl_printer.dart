@@ -4,6 +4,9 @@
 /// printer protocols (SGD, ZPL status, BLE characteristics).
 library;
 
+// Label building (re-exported so one import covers building and printing).
+export 'package:flutter_zpl_generator/flutter_zpl_generator.dart';
+
 // Exceptions
 export 'src/exceptions/connection_exception.dart';
 
@@ -53,7 +56,7 @@ export 'src/graphics/z64_compressor.dart';
 export 'src/graphics/graphics_util.dart';
 
 // Models
-export 'src/models/zpl_print_mode.dart';
+export 'src/models/printer_print_mode.dart';
 export 'src/models/storage_info.dart';
 export 'src/models/printer_object.dart';
 export 'src/models/field_description.dart';

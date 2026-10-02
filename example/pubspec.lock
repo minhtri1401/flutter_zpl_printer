@@ -158,7 +158,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_zpl_generator:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_zpl_generator
       sha256: "29e7d21d31cc5881a471334a827ab44bea293d81d5a940f88b0ba7012da1c4ff"

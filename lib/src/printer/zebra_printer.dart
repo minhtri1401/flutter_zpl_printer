@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter_zpl_generator/flutter_zpl_generator.dart';
+
 import '../connection/connection.dart';
 import '../graphics/graphics_util.dart';
 import '../models/printer_metadata_key.dart';
@@ -53,6 +55,12 @@ class ZebraPrinter {
     final data = Uint8List.fromList(utf8.encode(zpl));
     await connection.write(data);
   }
+
+  /// Build [label] with `flutter_zpl_generator` and send it.
+  ///
+  /// Equivalent to `printZpl(await label.build())`.
+  Future<void> printLabel(ZplGenerator label) async =>
+      printZpl(await label.build());
 
   /// Send a raw command string to the printer (alias for [printZpl]).
   Future<void> sendCommand(String command) => printZpl(command);
@@ -140,28 +148,37 @@ class ZebraPrinter {
 
   // -- Graphics operations (SDK: GraphicsUtil.java) --
 
-  /// Print an image inline at position (x, y).
+  /// Print an image (PNG, JPEG, ...) at position ([x], [y]).
   ///
-  /// See [GraphicsUtil.printImage]. Sends uncompressed hex unless
-  /// [useCompression] is set (Z64, not yet verified on a printer).
+  /// Built with `flutter_zpl_generator`: the graphic is downloaded to printer
+  /// memory with `~DG` (uncompressed hex) before `^XA`, then placed with
+  /// `^XG`. This is the image path tested on hardware, and the one Link-OS
+  /// mobile printers need.
   ///
-  /// For production image printing, `flutter_zpl_generator` is the path
-  /// tested on hardware: build the label with it and send it with
-  /// [printZpl].
+  /// [targetWidth] resizes the image (dots). [dithering] defaults to
+  /// threshold: Floyd-Steinberg's dense dot coverage can trip print-head
+  /// thermal protection on some mobile printers. [graphicName] is the name
+  /// the graphic is stored under in printer memory.
+  ///
+  /// For full control (label width, print mode, more fields), build a
+  /// [ZplGenerator] yourself and call [printLabel].
   Future<void> printImage(
     Uint8List imageBytes, {
     int x = 0,
     int y = 0,
     int? targetWidth,
-    bool useCompression = false,
-  }) => GraphicsUtil.printImage(
-    connection,
-    imageBytes,
-    x: x,
-    y: y,
-    targetWidth: targetWidth,
-    useCompression: useCompression,
-  );
+    ZplDitheringAlgorithm dithering = ZplDitheringAlgorithm.threshold,
+    String graphicName = 'IMG',
+  }) =>
+      printLabel(ZplGenerator(commands: [
+        ZplImageDownload(
+          image: imageBytes,
+          graphicName: graphicName,
+          targetWidth: targetWidth,
+          ditheringAlgorithm: dithering,
+        ),
+        ZplImageRecall(x: x, y: y, graphicName: graphicName),
+      ]));
 
   /// Store an image on the printer as a GRF file.
   Future<void> storeImage(String path, Uint8List imageBytes) =>

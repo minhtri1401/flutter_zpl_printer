@@ -59,7 +59,7 @@
 │       │   ├── printer_alert.dart           # Alert config
 │       │   ├── printer_profile.dart         # ZIP profile structure
 │       │   ├── link_os_version.dart         # Firmware version
-│       │   ├── zpl_print_mode.dart          # Speed/darkness enum
+│       │   ├── printer_print_mode.dart          # Print mode reported by ~HS
 │       │   └── ...
 │       └── exceptions/
 │           └── connection_exception.dart    # Exception hierarchy
@@ -136,7 +136,7 @@
 - `PrinterAlert` — Alert config
 - `PrinterProfile` — ZIP backup structure
 - `LinkOsVersion` — Firmware version
-- `ZplPrintMode` — Speed/darkness
+- `PrinterPrintMode` — print mode reported by `~HS`
 - `ConnectionType` — TCP / BLE enum
 
 ## Core Layers
@@ -437,7 +437,7 @@ Data classes representing printer state and configuration.
 **LinkOsVersion**
 - Parsed firmware: major, minor, patch, rawString
 
-**ZplPrintMode**
+**PrinterPrintMode**
 - Speed/darkness: speed (0-12), darkness (0-30)
 
 **DiscoveredPrinter**

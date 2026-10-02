@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-// Prefixed: both packages export ZplPrintMode.
-import 'package:flutter_zpl_generator/flutter_zpl_generator.dart' as zpl;
+// Also brings in flutter_zpl_generator (ZplGenerator, ZplText, ...).
 import 'package:flutter_zpl_printer/flutter_zpl_printer.dart';
 
 import 'common.dart';
@@ -94,40 +93,43 @@ class _PrinterPageState extends State<PrinterPage> {
     return int.tryParse(raw.trim()) ?? 384; // 2-inch, 203 dpi fallback
   }
 
-  /// Recommended: flutter_zpl_generator builds the label (`~DG` download +
-  /// `^XG` recall, uncompressed hex), then `printZpl` sends it. This is the
-  /// path that has been tested on real printers.
-  Future<void> _printImageWithGenerator() => _run('Printing image…', () async {
-        final width = await _printWidth();
-        final label = await zpl.ZplGenerator(
-          config: zpl.ZplConfiguration(
-            printWidth: width,
-            printMode: zpl.ZplPrintMode.tearOff,
-          ),
-          autoLabelLengthFromFirstImage: true,
-          commands: [
-            zpl.ZplImageDownload(
-              image: buildTestImagePng(),
-              targetWidth: width,
-              ditheringAlgorithm: zpl.ZplDitheringAlgorithm.threshold,
-            ),
-            const zpl.ZplImageRecall(),
-          ],
-        ).build();
-        await _printer.printZpl(label);
-      }, done: 'Image sent (flutter_zpl_generator)');
+  /// One call: `printImage` builds the label with flutter_zpl_generator
+  /// (`~DG` download + `^XG` recall, uncompressed hex) and sends it.
+  Future<void> _printImage() => _run('Printing image…', () async {
+        await _printer.printImage(buildTestImagePng(), targetWidth: await _printWidth());
+      }, done: 'Image sent (printImage)');
 
-  /// This package's own `printImage`: `^GFA` inline graphic. Uncompressed
-  /// hex by default; [z64] switches to Z64 compression.
-  Future<void> _printImageWithLibrary({required bool z64}) =>
-      _run('Printing image…', () async {
+  /// Full control: build a label with flutter_zpl_generator (re-exported by
+  /// this package) and send it with `printLabel`.
+  Future<void> _printLabelWithImage() => _run('Printing label…', () async {
         final width = await _printWidth();
-        await _printer.printImage(
+        await _printer.printLabel(
+          ZplGenerator(
+            config: ZplConfiguration(printWidth: width, printMode: ZplPrintMode.tearOff),
+            autoLabelLengthFromFirstImage: true,
+            commands: [
+              ZplImageDownload(
+                image: buildTestImagePng(),
+                targetWidth: width,
+                ditheringAlgorithm: ZplDitheringAlgorithm.threshold,
+              ),
+              const ZplImageRecall(),
+            ],
+          ),
+        );
+      }, done: 'Label sent (printLabel)');
+
+  /// Low-level `GraphicsUtil.printImage`: inline `^GFA` graphic, not yet
+  /// verified on a printer. [z64] switches to Z64 compression.
+  Future<void> _printImageLowLevel({required bool z64}) =>
+      _run('Printing image…', () async {
+        await GraphicsUtil.printImage(
+          _printer.connection,
           buildTestImagePng(),
-          targetWidth: width,
+          targetWidth: await _printWidth(),
           useCompression: z64,
         );
-      }, done: z64 ? 'Image sent (printImage, Z64)' : 'Image sent (printImage, hex)');
+      }, done: z64 ? 'Image sent (^GF, Z64)' : 'Image sent (^GF, hex)');
 
   Future<void> _readSetting() async {
     final key = _sgdController.text.trim();
@@ -238,29 +240,42 @@ class _PrinterPageState extends State<PrinterPage> {
             title: 'Print image',
             children: [
               Text(
-                'Prints the same test picture three ways. flutter_zpl_generator is the '
-                'path tested on hardware. The two printImage options have not been '
-                'verified on a printer yet: compare their output with the first.',
+                'printImage and printLabel use flutter_zpl_generator, the path tested on '
+                'hardware. The advanced GraphicsUtil (^GF) options have not been verified '
+                'on a printer yet: compare their output with the first two.',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               const SizedBox(height: 12),
-              FilledButton.icon(
-                onPressed: busy ? null : _printImageWithGenerator,
-                icon: const Icon(Icons.image),
-                label: const Text('flutter_zpl_generator (recommended)'),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  FilledButton.icon(
+                    onPressed: busy ? null : _printImage,
+                    icon: const Icon(Icons.image),
+                    label: const Text('printImage'),
+                  ),
+                  FilledButton.tonalIcon(
+                    onPressed: busy ? null : _printLabelWithImage,
+                    icon: const Icon(Icons.label_outline),
+                    label: const Text('printLabel (ZplGenerator)'),
+                  ),
+                ],
               ),
+              const SizedBox(height: 12),
+              Text('Advanced: GraphicsUtil.printImage (^GF)', style: Theme.of(context).textTheme.labelMedium),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: [
                   OutlinedButton(
-                    onPressed: busy ? null : () => _printImageWithLibrary(z64: false),
-                    child: const Text('printImage (hex)'),
+                    onPressed: busy ? null : () => _printImageLowLevel(z64: false),
+                    child: const Text('^GF hex'),
                   ),
                   OutlinedButton(
-                    onPressed: busy ? null : () => _printImageWithLibrary(z64: true),
-                    child: const Text('printImage (Z64)'),
+                    onPressed: busy ? null : () => _printImageLowLevel(z64: true),
+                    child: const Text('^GF Z64'),
                   ),
                 ],
               ),

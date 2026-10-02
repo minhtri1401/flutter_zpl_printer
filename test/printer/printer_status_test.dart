@@ -79,7 +79,7 @@ void main() {
       expect(status.labelLengthInDots, 831);
       expect(status.numberOfFormatsInReceiveBuffer, 0);
       expect(status.labelsRemainingInBatch, 0);
-      expect(status.printMode, ZplPrintMode.tearOff);
+      expect(status.printMode, PrinterPrintMode.tearOff);
     });
 
     test('isReadyToPrint false when paperOut', () async {
@@ -178,7 +178,7 @@ void main() {
         labelLengthInDots: 0,
         numberOfFormatsInReceiveBuffer: 0,
         labelsRemainingInBatch: 0,
-        printMode: ZplPrintMode.tearOff,
+        printMode: PrinterPrintMode.tearOff,
       );
       expect(status.statusMessages, ['Ready To Print']);
     });
@@ -197,7 +197,7 @@ void main() {
         labelLengthInDots: 0,
         numberOfFormatsInReceiveBuffer: 0,
         labelsRemainingInBatch: 0,
-        printMode: ZplPrintMode.tearOff,
+        printMode: PrinterPrintMode.tearOff,
       );
       expect(status.statusMessages, ['HEAD OPEN', 'PAPER OUT']);
     });
@@ -216,7 +216,7 @@ void main() {
         labelLengthInDots: 0,
         numberOfFormatsInReceiveBuffer: 0,
         labelsRemainingInBatch: 0,
-        printMode: ZplPrintMode.tearOff,
+        printMode: PrinterPrintMode.tearOff,
       );
       expect(status.statusMessages, [
         'HEAD OPEN',
@@ -242,27 +242,27 @@ void main() {
         labelLengthInDots: 0,
         numberOfFormatsInReceiveBuffer: 0,
         labelsRemainingInBatch: 0,
-        printMode: ZplPrintMode.tearOff,
+        printMode: PrinterPrintMode.tearOff,
       );
       expect(status.statusMessages, ['INVALID STATUS']);
     });
   });
 
-  group('ZplPrintMode.fromHsChar', () {
+  group('PrinterPrintMode.fromHsChar', () {
     test('maps all SDK print mode characters', () {
-      expect(ZplPrintMode.fromHsChar('0'), ZplPrintMode.rewind);
-      expect(ZplPrintMode.fromHsChar('1'), ZplPrintMode.peelOff);
-      expect(ZplPrintMode.fromHsChar('2'), ZplPrintMode.tearOff);
-      expect(ZplPrintMode.fromHsChar('3'), ZplPrintMode.cutter);
-      expect(ZplPrintMode.fromHsChar('4'), ZplPrintMode.applicator);
-      expect(ZplPrintMode.fromHsChar('5'), ZplPrintMode.delayedCut);
-      expect(ZplPrintMode.fromHsChar('6'), ZplPrintMode.linerlessPeel);
-      expect(ZplPrintMode.fromHsChar('7'), ZplPrintMode.linerlessRewind);
-      expect(ZplPrintMode.fromHsChar('8'), ZplPrintMode.partialCutter);
-      expect(ZplPrintMode.fromHsChar('9'), ZplPrintMode.rfid);
-      expect(ZplPrintMode.fromHsChar('K'), ZplPrintMode.kiosk);
-      expect(ZplPrintMode.fromHsChar('k'), ZplPrintMode.kiosk);
-      expect(ZplPrintMode.fromHsChar('X'), ZplPrintMode.unknown);
+      expect(PrinterPrintMode.fromHsChar('0'), PrinterPrintMode.rewind);
+      expect(PrinterPrintMode.fromHsChar('1'), PrinterPrintMode.peelOff);
+      expect(PrinterPrintMode.fromHsChar('2'), PrinterPrintMode.tearOff);
+      expect(PrinterPrintMode.fromHsChar('3'), PrinterPrintMode.cutter);
+      expect(PrinterPrintMode.fromHsChar('4'), PrinterPrintMode.applicator);
+      expect(PrinterPrintMode.fromHsChar('5'), PrinterPrintMode.delayedCut);
+      expect(PrinterPrintMode.fromHsChar('6'), PrinterPrintMode.linerlessPeel);
+      expect(PrinterPrintMode.fromHsChar('7'), PrinterPrintMode.linerlessRewind);
+      expect(PrinterPrintMode.fromHsChar('8'), PrinterPrintMode.partialCutter);
+      expect(PrinterPrintMode.fromHsChar('9'), PrinterPrintMode.rfid);
+      expect(PrinterPrintMode.fromHsChar('K'), PrinterPrintMode.kiosk);
+      expect(PrinterPrintMode.fromHsChar('k'), PrinterPrintMode.kiosk);
+      expect(PrinterPrintMode.fromHsChar('X'), PrinterPrintMode.unknown);
     });
   });
 }

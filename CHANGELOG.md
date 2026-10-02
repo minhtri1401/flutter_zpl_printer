@@ -1,4 +1,29 @@
-## 0.1.2
+## 0.2.0
+
+**Build and print with one import.** `flutter_zpl_printer` now depends on and re-exports
+[`flutter_zpl_generator`](https://pub.dev/packages/flutter_zpl_generator).
+
+### Breaking
+
+- **`ZplPrintMode` is now `PrinterPrintMode`** (file `printer_print_mode.dart`). It's the print mode the
+  printer reports in `getStatus().printMode`. The rename frees the name for `flutter_zpl_generator`'s
+  `ZplPrintMode`, the mode you set in a label's configuration. Migration: rename the type in your code.
+  If you imported the generator with a prefix only to avoid this clash, you can drop the prefix.
+
+### Added
+
+- `ZebraPrinter.printLabel(ZplGenerator label)`: builds and sends a label.
+- Everything from `flutter_zpl_generator` is available through
+  `package:flutter_zpl_printer/flutter_zpl_printer.dart` (`ZplGenerator`, `ZplText`, `ZplBarcode`,
+  `ZplImageDownload`, ...).
+
+### Changed
+
+- **`ZebraPrinter.printImage` uses `flutter_zpl_generator`**: a `~DG` download (uncompressed hex) before
+  `^XA`, then `^XG` to place it. That's the image path tested on hardware. New optional parameters:
+  `dithering` (default threshold) and `graphicName` (default `IMG`).
+- `GraphicsUtil.printImage` (low-level inline `^GF`) defaults to `useCompression: false`; Z64 is opt-in
+  and not yet verified on a printer.
 
 ### Fixed
 
@@ -7,18 +32,11 @@
   over the raw bitmap with CRC-16/CCITT-FALSE. Matches `flutter_zpl_generator`'s implementation.
   `Z64Compressor.crc16` now returns the XMODEM value and accepts any `List<int>`.
 
-### Changed
-
-- **`printImage` sends uncompressed hex by default.** `GraphicsUtil.printImage` defaults to
-  `useCompression: false`, since Z64 has not been verified on a printer yet. Pass
-  `useCompression: true` to opt in. `ZebraPrinter.printImage` gains the same parameter.
-
 ### Example
 
-- New **Print image** section: prints a generated test picture via `flutter_zpl_generator`
-  (recommended), `printImage` (hex), and `printImage` (Z64), for side-by-side comparison on a printer.
-
-`flutter_zpl_generator` remains the recommended way to print images; it's the path tested on hardware.
+- New **Print image** section: prints a generated test picture via `printImage`, via
+  `printLabel(ZplGenerator(...))`, and via `GraphicsUtil.printImage` (`^GF`, hex and Z64) for comparison.
+- The example no longer depends on `flutter_zpl_generator` directly.
 
 ## 0.1.1
 
