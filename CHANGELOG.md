@@ -11,7 +11,8 @@ enumeration and permissions). You no longer need to copy proprietary
 - **Three transports, one `Connection` API**
   - Bluetooth LE: `BleConnection`, `MultichannelBleConnection` (print + status channels).
   - Wi-Fi / Ethernet: `TcpConnection` (9100 ZPL, 6101 CPCL), `MultichannelTcpConnection` (9100 + 9200).
-  - USB: `UsbConnection`, `UsbDeviceAddress` (macOS, Windows, Android), backed by bundled libusb 1.0.29.
+  - USB (**experimental**, not yet confirmed working on any platform): `UsbConnection`, `UsbDeviceAddress`
+    for macOS, Windows, and Android, backed by libusb 1.0.29.
   - `ReconnectableConnection` decorator with exponential backoff.
 - **Discovery**: `DiscoveryService.discoverAll()` merges USB, UDP broadcast/multicast, and BLE.
   Each transport is also available on its own (`UsbDiscovery`, `NetworkDiscovery`, `BleDiscovery`),
@@ -52,7 +53,7 @@ Tested on hardware with Zebra printers:
 | :--- | :---: | :---: | :---: | :---: |
 | Bluetooth LE | ✅ | ✅ | ✅ | ✅ |
 | Wi-Fi / TCP | ✅ | ✅ | ✅ | ✅ |
-| USB | not possible (no USB host on iOS) | ✅ | ❌ fails in testing | not tested |
+| USB | not possible (no USB host on iOS) | not tested | ❌ fails in testing | not tested |
 
 ### Known issues
 

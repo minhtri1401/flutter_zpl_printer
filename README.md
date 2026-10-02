@@ -26,14 +26,14 @@ settings, error handling, and troubleshooting, based on a production app.
 | :--- | :---: | :---: | :---: | :---: |
 | Bluetooth LE | ✅ | ✅ | ✅ | ✅ |
 | Wi-Fi / TCP | ✅ | ✅ | ✅ | ✅ |
-| USB | ➖ not possible | ✅ | ❌ [fails in testing](#windows-usb) | ⚪ [not tested, libusb not bundled](#android-usb) |
+| USB | ➖ not possible | ⚪ not tested | ❌ [fails in testing](#windows-usb) | ⚪ [not tested, libusb not bundled](#android-usb) |
 
 ✅ works in hardware testing · ❌ fails in hardware testing · ⚪ code exists, not verified on hardware · ➖ platform limitation
 
-**USB, in short:** it works on macOS. It fails on Windows in our testing, and the cause isn't
-confirmed yet. It's untested on Android, and iOS doesn't allow it (USB calls throw
-`UsbUnsupportedOnPlatformException`). If you need wired printing on Windows today, use Wi-Fi
-instead.
+**USB, in short: experimental. It hasn't been confirmed working on any platform yet.** It is
+untested on macOS and Android, it fails on Windows in our testing (cause not confirmed yet), and
+iOS doesn't allow it (USB calls throw `UsbUnsupportedOnPlatformException`). Use Bluetooth LE or
+Wi-Fi for production printing.
 
 ---
 
@@ -247,7 +247,7 @@ final conn = UsbConnection.withPlatform(UsbDeviceAddress.parse('usb://0A5F:0027/
 ### Windows USB
 
 **Status: USB printing on Windows failed when tested with Zebra printers. The cause is not
-confirmed yet.** Bluetooth LE and Wi-Fi work on Windows; macOS USB is unaffected. Until this is
+confirmed yet.** Bluetooth LE and Wi-Fi work on Windows. Until this is
 fixed, treat Windows USB as experimental and offer Wi-Fi or Bluetooth.
 
 What the Windows USB code does in 0.1.0:

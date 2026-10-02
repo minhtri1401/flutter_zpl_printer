@@ -5,6 +5,7 @@ import 'package:flutter_zpl_printer/src/connection/connection_config.dart';
 import 'package:flutter_zpl_printer/src/connection/usb_connection.dart';
 import 'package:flutter_zpl_printer/src/connection/usb_device_address.dart';
 import 'package:flutter_zpl_printer/src/exceptions/connection_exception.dart';
+import 'package:flutter_zpl_printer/src/printer/sgd.dart';
 import 'package:flutter_zpl_printer/flutter_zpl_printer_testing.dart';
 
 UsbDeviceRecord _zqDevice({String serial = 'XX1', String path = '/p1'}) =>
@@ -197,6 +198,50 @@ void main() {
         throwsA(isA<UsbDeviceUnpluggedException>()),
       );
       expect(c.isConnected, isFalse);
+    });
+
+    test('unplug during read closes connection and rethrows', () async {
+      final fake = FakeUsbPlatform()..devices.add(_zqDevice());
+      final c = _conn(fake, UsbDeviceAddress.parse('usb://0A5F:0027/XX1'));
+      await c.open();
+      fake.readError = UsbDeviceUnpluggedException();
+      await expectLater(c.read(), throwsA(isA<UsbDeviceUnpluggedException>()));
+      expect(c.isConnected, isFalse);
+    });
+
+    test('request/response returns the printer reply (Sgd.get)', () async {
+      final fake = FakeUsbPlatform()..devices.add(_zqDevice());
+      final c = _conn(
+        fake,
+        UsbDeviceAddress.parse('usb://0A5F:0027/XX1'),
+        config: const ConnectionConfig(maxTimeoutForRead: 500, timeToWaitForMoreData: 100),
+      );
+      await c.open();
+      fake.queueRead(1, Uint8List.fromList('"ZQ620"'.codeUnits));
+      expect(await Sgd.get('device.product_name', c), 'ZQ620');
+    });
+
+    test('reply split across bulk packets is reassembled', () async {
+      final fake = FakeUsbPlatform()..devices.add(_zqDevice());
+      final c = _conn(
+        fake,
+        UsbDeviceAddress.parse('usb://0A5F:0027/XX1'),
+        config: const ConnectionConfig(maxTimeoutForRead: 500, timeToWaitForMoreData: 100),
+      );
+      await c.open();
+      fake.queueRead(1, Uint8List.fromList('"V85.'.codeUnits));
+      fake.queueRead(1, Uint8List.fromList('20.24"'.codeUnits));
+      expect(await Sgd.get('appl.name', c), 'V85.20.24');
+    });
+
+    test('open picks the printer whose serial matches when two share VID:PID',
+        () async {
+      final fake = FakeUsbPlatform()
+        ..devices.add(_zqDevice(serial: 'SERIAL_A', path: '/p1'))
+        ..devices.add(_zqDevice(serial: 'SERIAL_B', path: '/p2'));
+      final c = _conn(fake, UsbDeviceAddress.parse('usb://0A5F:0027/SERIAL_B'));
+      await c.open(); // previously opened SERIAL_A and threw identity mismatch
+      expect(c.isConnected, isTrue);
     });
 
     test('connectionDescription formats VID:PID:SERIAL', () {

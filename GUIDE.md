@@ -7,7 +7,8 @@ failures.
 
 The patterns come from **zPrint**, a shipping label app built on this
 library. The library itself has been tested against real Zebra printers on iOS,
-Android, macOS, and Windows (see [section 5](#5-usb-what-works-today) for USB).
+Android, macOS, and Windows over Bluetooth LE and Wi-Fi. USB is experimental; see
+[section 5](#5-usb-what-works-today).
 Where zPrint learned something the hard way (a firmware quirk, a timeout that
 was too short), the guide says so.
 
@@ -105,8 +106,9 @@ and anything else (cellular only, offline) as unavailable. It checks this with
 
 ### USB
 
-USB is only worth trying on macOS, Windows, and Android. On iOS it is never available. See
-[section 5](#5-usb-what-works-today) for what works on each platform.
+USB code exists for macOS, Windows, and Android, but it is **experimental**: it hasn't been
+confirmed working on any platform yet. On iOS it is never available. See
+[section 5](#5-usb-what-works-today) before relying on it.
 
 ```dart
 final usbPossible = Platform.isMacOS || Platform.isWindows || Platform.isAndroid;
@@ -305,13 +307,14 @@ The current state of USB, as tested:
 
 | Platform | Result | Details |
 | :--- | :--- | :--- |
-| **macOS** | ✅ Works | Tested with Zebra printers. |
+| **macOS** | ⚪ Not tested | The code is complete (IOKit enumeration, libusb bundled through the podspec), but it hasn't been tested with a printer yet. |
 | **Windows** | ❌ **Fails in our testing** | USB printing failed when tested with Zebra printers. The root cause is not confirmed yet; see below. Bluetooth LE and Wi-Fi work on Windows. |
 | **Android** | ⚪ Not tested | The code is in place, but the package does not ship `libusb-1.0.so`, so USB calls fail with `UsbLibLoadException` until you build and add it. |
 | **iOS** | ➖ Not possible | iOS gives apps no USB access to printers. `UsbConnection.open()` throws `UsbUnsupportedOnPlatformException`. |
 
-**If you need USB on Windows today, don't rely on it.** Offer Wi-Fi or Bluetooth on Windows,
-and treat USB as experimental.
+**USB has not been confirmed working on any platform yet.** Ship Bluetooth LE or Wi-Fi as your
+main path and treat USB as experimental. If you test USB with a printer, please share the result on
+the [issue tracker](https://github.com/minhtri1401/flutter_zpl_printer/issues).
 
 ### Windows: what the code does and what might be wrong
 
@@ -341,7 +344,7 @@ If you try USB on Windows, please report the printer model, Windows version, dri
 Device Manager, and the exception text on the
 [issue tracker](https://github.com/minhtri1401/flutter_zpl_printer/issues).
 
-### Using USB where it works
+### Using USB (experimental)
 
 ```dart
 // Address format: usb://VID:PID/SERIAL   (Zebra's vendor ID is 0A5F)

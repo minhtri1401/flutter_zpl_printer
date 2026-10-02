@@ -8,7 +8,7 @@ Platform status (tested on hardware with Zebra printers):
 | --- | --- | --- | --- | --- |
 | Bluetooth LE | works | works | works | works |
 | Wi-Fi / TCP | works | works | works | works |
-| USB | not possible (no USB host on iOS) | works | fails in testing, cause unconfirmed | not tested; needs libusb-1.0.so, not bundled |
+| USB | not possible (no USB host on iOS) | not tested | fails in testing, cause unconfirmed | not tested; needs libusb-1.0.so, not bundled |
 
 Core flow: discover (`DiscoveryService.discoverAll`, or `BleDiscovery.discoverZebra` / `NetworkDiscovery.discover` / `UsbDiscovery.enumerate`) → `DiscoveredPrinter.createConnection()` or construct `BleConnection(deviceId)` / `TcpConnection.zpl(ip)` / `UsbConnection(UsbDeviceAddress.parse('usb://0A5F:PID/SERIAL'))` → `final printer = await ZebraPrinter.connect(connection)` → `printZpl`, `getStatus`, `getSetting`, `setSetting`, `getMetadata`, `printConfigurationLabel`, `calibrate`, `disconnect`.
 
@@ -20,10 +20,10 @@ Rules for writing app code with this package:
 - `Sgd.doCommand` / `printer.doCommand` wait for a reply. For actions that never reply (e.g. `device.reset`), write `! U1 do "<action>" "<arg>"\r\n` with `connection.write` instead.
 - Printers answer `?` for unsupported settings; treat `?` and empty strings as "unknown".
 - Errors are `ConnectionException` or subclasses: `ConnectionTimeoutException`, `ConnectionClosedException`, `ReconnectSuccessException` (from `ReconnectableConnection`; the library never re-sends a job), and 11 `Usb*Exception` types. Show `UsbDeviceBusyException.remediation` to users.
-- Prefer USB, then TCP, then BLE when a printer is reachable several ways. Ping TCP/USB with `getStatus()` after connecting.
+- When a printer is reachable several ways, zPrint tries USB, then TCP, then BLE, and falls back on failure. Ping TCP/USB with `getStatus()` after connecting.
 - Use keys from the `PrinterSgdKey` enum (`.value`) instead of hand-typed SGD strings.
 - Android needs runtime Bluetooth permissions (`bluetoothScan`, `bluetoothConnect`, `location`); other platforms prompt automatically given the Info.plist / entitlement keys in the README.
-- Don't offer USB on iOS. Treat USB on Windows as experimental and offer Wi-Fi or Bluetooth there. `UsbHotplugStream.events()` does not emit on Windows.
+- USB is experimental: not confirmed working on any platform. Don't offer it on iOS; don't make it the only path anywhere. Prefer Bluetooth LE or Wi-Fi. `UsbHotplugStream.events()` does not emit on Windows.
 
 ## Docs
 

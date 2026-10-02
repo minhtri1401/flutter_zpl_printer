@@ -246,7 +246,12 @@ class UsbPlatformFfi {
   Exception _mapLibusbError(int rc, String op) {
     switch (rc) {
       case _libusbErrorNoDevice:
-        return UsbDeviceDisappearedException('$op: device disappeared (rc=$rc)');
+        // During a transfer the device was open and is now gone: that's an
+        // unplug, which UsbConnection handles by closing itself. Before the
+        // device is open it simply isn't there.
+        return op.startsWith('bulk_transfer')
+            ? UsbDeviceUnpluggedException('$op: device unplugged (rc=$rc)')
+            : UsbDeviceDisappearedException('$op: device disappeared (rc=$rc)');
       case _libusbErrorBusy:
         return UsbDeviceBusyException('$op: device busy (rc=$rc)');
       case _libusbErrorTimeout:

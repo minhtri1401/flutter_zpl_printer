@@ -6,7 +6,7 @@ A small app that shows the three transports side by side:
 | :--- | :--- |
 | **Bluetooth** | Scans for Zebra printers over Bluetooth LE (`BleDiscovery.discoverZebra`). Requests runtime permissions on Android. |
 | **Wi-Fi** | Finds printers with UDP broadcast and multicast (`DiscoveryService.discoverAll`), or connects to a typed IP on port 9100 (`TcpConnection.zpl`). |
-| **USB** | Lists attached printers (`UsbDiscovery.enumerate`) and refreshes on plug/unplug (`UsbHotplugStream.events`). macOS, Windows, and Android only. |
+| **USB** | Lists attached printers (`UsbDiscovery.enumerate`) and refreshes on plug/unplug (`UsbHotplugStream.events`). macOS, Windows, and Android only. **Experimental:** not yet confirmed working on any platform. |
 
 Tap a printer to open the printer screen:
 
@@ -34,4 +34,4 @@ cd example
 flutter run -d macos    # or windows, or an iOS/Android device
 ```
 
-USB on Windows has a known issue in this release. See "Known issues" in the package README.
+USB is experimental in this release (untested on macOS and Android, failing on Windows). See "Known issues" in the package README.

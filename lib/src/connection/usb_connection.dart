@@ -13,10 +13,11 @@ import 'usb_device_address.dart';
 /// USB [Connection] backed by a native platform channel for lifecycle and
 /// libusb FFI for bulk I/O.
 ///
-/// Platform status in this release: works on macOS; fails in testing on
-/// Windows (cause not yet confirmed, see the README's "Known issues"); not
-/// tested on Android, where `libusb-1.0.so` is not bundled; not possible on
-/// iOS, where [open] throws [UsbUnsupportedOnPlatformException].
+/// Platform status in this release: not yet tested on hardware on macOS or
+/// Android (Android also lacks a bundled `libusb-1.0.so`); fails in testing
+/// on Windows (cause not yet confirmed, see the README's "Known issues");
+/// not possible on iOS, where [open] throws
+/// [UsbUnsupportedOnPlatformException].
 ///
 /// Lifecycle flow:
 ///   1. [open] checks platform support, requests permission (Android) if
@@ -37,22 +38,41 @@ class UsbConnection extends Connection {
   String? _lastPath;
   bool _closed = false;
 
+  /// Bytes pulled off the bulk IN endpoint by [bytesAvailable] and not yet
+  /// handed out by [read].
+  final BytesBuilder _pending = BytesBuilder(copy: false);
+
+  /// How long [bytesAvailable] waits on the IN endpoint per poll. Kept short
+  /// because the base class calls it in a loop until its own deadline.
+  static const _pollTimeoutMs = 50;
+
+  /// Bulk IN request size. A multiple of every USB bulk packet size (64 for
+  /// full speed, 512 for high speed), so a full packet can't overflow it.
+  static const _readChunkBytes = 4096;
+
   /// Finds the platform path for our [address] by enumerating devices and
-  /// matching VID + PID. Serial matching is deferred to [open] so a serial
-  /// mismatch surfaces as [UsbIdentityMismatchException] (richer diagnostics)
-  /// rather than a generic [UsbDeviceDisappearedException].
+  /// matching VID + PID, preferring the device whose serial matches when
+  /// [UsbDeviceAddress.serialNumber] is set (two printers of the same model
+  /// share VID + PID). If no serial matches, the first VID + PID match is
+  /// returned so [open] can surface [UsbIdentityMismatchException] (richer
+  /// diagnostics) rather than a generic [UsbDeviceDisappearedException].
   Future<String?> _resolvePath() async {
     final filter = UsbEnumerateFilter(
       vendorId: address.isZebra ? UsbDeviceAddress.zebraVendorId : null,
       includeDescriptorStrings: true,
     );
     final records = await _platform.enumerate(filter);
-    for (final r in records) {
-      if (r.vendorId == address.vendorId && r.productId == address.productId) {
-        return r.path;
+    final matches = records
+        .where((r) => r.vendorId == address.vendorId && r.productId == address.productId)
+        .toList();
+    if (matches.isEmpty) return null;
+    final serial = address.serialNumber;
+    if (serial != null) {
+      for (final r in matches) {
+        if (r.serialNumber == serial) return r.path;
       }
     }
-    return null;
+    return matches.first.path;
   }
 
   UsbConnection(this.address, {super.config}) : _platform = _defaultPlatform();
@@ -111,6 +131,7 @@ class UsbConnection extends Connection {
 
     _open = result;
     _closed = false;
+    _pending.clear();
   }
 
   @override
@@ -121,6 +142,7 @@ class UsbConnection extends Connection {
     final pathSnapshot = _lastPath;
     _open = null;
     _lastPath = null;
+    _pending.clear();
     if (snapshot != null) {
       // Best-effort cleanup — swallow errors since we're already tearing down.
       try {
@@ -134,22 +156,32 @@ class UsbConnection extends Connection {
     }
   }
 
+  /// libusb bulk endpoints can't be peeked, so this does a short read and
+  /// buffers whatever arrives. The base class's request/response loop only
+  /// calls [read] while this returns > 0.
   @override
   Future<int> bytesAvailable() async {
-    // libusb bulk endpoints aren't peek-able. The base Connection.waitForData
-    // polls read() directly, so we can safely return 0 here to force a poll.
-    return 0;
+    if (_pending.isEmpty && isConnected) {
+      final data = await _readBulk(_pollTimeoutMs);
+      if (data != null) _pending.add(data);
+    }
+    return _pending.length;
   }
 
   @override
   Future<Uint8List?> read() async {
+    if (_pending.isNotEmpty) return _pending.takeBytes();
+    return _readBulk(config.usbBulkTimeoutMs);
+  }
+
+  Future<Uint8List?> _readBulk(int timeoutMs) async {
     if (!isConnected) return null;
     final handle = _open!;
     try {
       final data = await _platform.readBytes(
         handleId: handle.platformHandle,
-        maxBytes: handle.wMaxPacketSizeOut > 0 ? handle.wMaxPacketSizeOut : 512,
-        timeoutMs: config.usbBulkTimeoutMs,
+        maxBytes: _readChunkBytes,
+        timeoutMs: timeoutMs,
       );
       return data.isEmpty ? null : data;
     } on UsbDeviceUnpluggedException {

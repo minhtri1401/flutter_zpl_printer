@@ -16,15 +16,20 @@ class FileUtil {
 
   /// List files on a specific drive.
   ///
-  /// Sends `^XA^WD{drive}*.*^FS^XZ` and parses the response.
+  /// Sends `^XA^HW{drive}*.*^XZ` (host directory list), which returns the
+  /// listing to the host. `^WD` would print a directory label instead.
   static Future<List<PrinterObject>> listFiles(
     Connection connection, {
     String drive = 'E:',
   }) async {
     ZplSanitizer.validateDrive(drive);
-    final command = '^XA^WD$drive*.*^FS^XZ';
+    final command = '^XA^HW$drive*.*^XZ';
     final data = Uint8List.fromList(utf8.encode(command));
-    final response = await connection.sendAndWaitForResponse(data);
+    // The listing is framed by STX ... ETX.
+    final response = await connection.sendAndWaitForResponse(
+      data,
+      endOfResponseMarker: '\x03',
+    );
     return _parseFileList(utf8.decode(response, allowMalformed: true));
   }
 
@@ -144,11 +149,14 @@ class FileUtil {
     final lines = cleaned.split('\n').where((l) => l.trim().isNotEmpty);
 
     for (final line in lines) {
-      // Format: "* E:FILENAME.ZPL    1234" or similar whitespace-separated
-      final trimmed = line.trim();
-      if (trimmed.startsWith('*')) continue; // header line
-      // Try to split on multiple spaces or tab
-      final match = RegExp(r'(\S+)\s+(\d+)').firstMatch(trimmed);
+      // ^HW output:
+      //   - DIR E:*.*                  header
+      //   * E:FILENAME.ZPL    1234     one line per file
+      //   -794624 bytes free E:ONBOARD FLASH
+      var trimmed = line.trim();
+      if (trimmed.startsWith('-')) continue; // header / free-space footer
+      if (trimmed.startsWith('*')) trimmed = trimmed.substring(1).trimLeft();
+      final match = RegExp(r'^(\S+)\s+(\d+)').firstMatch(trimmed);
       if (match != null) {
         objects.add(PrinterObject(
           name: match.group(1)!,

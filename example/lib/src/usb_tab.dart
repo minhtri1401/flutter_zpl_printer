@@ -8,7 +8,8 @@ import 'common.dart';
 
 /// USB: list attached Zebra printers and refresh on plug/unplug.
 ///
-/// Available on macOS, Windows, and Android. iOS has no USB host access.
+/// Experimental: USB code exists for macOS, Windows, and Android but hasn't
+/// been confirmed working on any of them yet. iOS has no USB host access.
 class UsbTab extends StatefulWidget {
   const UsbTab({super.key});
 
@@ -92,6 +93,11 @@ class _UsbTabState extends State<UsbTab> with AutomaticKeepAliveClientMixin {
                 'is not confirmed yet. Use Wi-Fi or Bluetooth on Windows for now. '
                 'Plug/unplug is not detected on Windows: tap Refresh. '
                 'See "Known issues → Windows USB" in the README.',
+          ),
+        if (Platform.isMacOS)
+          const NoticeCard(
+            message: 'USB is experimental: it has not been tested with a printer on '
+                'macOS yet. Bluetooth and Wi-Fi are tested and work.',
           ),
         if (Platform.isAndroid)
           const NoticeCard(

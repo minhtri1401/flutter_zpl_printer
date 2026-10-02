@@ -25,7 +25,7 @@ void main() {
 
       final files = await FileUtil.listFiles(conn);
 
-      expect(conn.allWrittenString, '^XA^WDE:*.*^FS^XZ');
+      expect(conn.allWrittenString, '^XA^HWE:*.*^XZ');
       expect(files.length, 2);
       expect(files[0].name, 'E:FORMAT1.ZPL');
       expect(files[0].sizeBytes, 1234);
@@ -38,7 +38,32 @@ void main() {
 
       await FileUtil.listFiles(conn, drive: 'R:');
 
-      expect(conn.allWrittenString, '^XA^WDR:*.*^FS^XZ');
+      expect(conn.allWrittenString, '^XA^HWR:*.*^XZ');
+    });
+
+    // Reply copied from the ^HW example in Zebra's ZPL II Programming Guide.
+    test('parses ^HW host directory output', () async {
+      conn.queueStringResponse(
+        '\x02\r\n-DIR R:*.*\r\n'
+        '*R:ARIALN1.FNT 49140\r\n'
+        '*R:ZEBRA.GRF 8420\r\n'
+        '\r\n-794292 bytes free R:RAM\r\n\x03',
+      );
+
+      final files = await FileUtil.listFiles(conn, drive: 'R:');
+
+      expect(files.map((f) => f.name), ['R:ARIALN1.FNT', 'R:ZEBRA.GRF']);
+      expect(files.map((f) => f.sizeBytes), [49140, 8420]);
+    });
+
+    // The format description puts a space after the asterisk.
+    test('parses entries with a space after the asterisk', () async {
+      conn.queueStringResponse('\x02\r\nDIR E: \r\n* E:FORMAT1.ZPL  1234\r\n\x03');
+
+      final files = await FileUtil.listFiles(conn);
+
+      expect(files.single.name, 'E:FORMAT1.ZPL');
+      expect(files.single.sizeBytes, 1234);
     });
 
     test('handles empty response', () async {

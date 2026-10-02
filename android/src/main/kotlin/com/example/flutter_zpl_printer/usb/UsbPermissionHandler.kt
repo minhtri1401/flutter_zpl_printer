@@ -14,7 +14,7 @@ import android.os.Build
  *
  * Wraps the legacy `UsbManager.requestPermission` + broadcast-receiver dance
  * behind a callback API. Handles:
- *  - `FLAG_IMMUTABLE` (mandatory API 31+)
+ *  - `FLAG_MUTABLE` (explicit mutability is mandatory on API 31+; USB needs mutable)
  *  - `RECEIVER_NOT_EXPORTED` (mandatory API 34+)
  *  - receiver auto-unregister after first response
  */
@@ -29,8 +29,13 @@ class UsbPermissionHandler(private val context: Context) {
 
         val action = "${context.packageName}.USB_PERMISSION"
         val intent = Intent(action).apply { setPackage(context.packageName) }
+        // Must be mutable: UsbManager fills EXTRA_DEVICE and
+        // EXTRA_PERMISSION_GRANTED into this intent, and an immutable
+        // PendingIntent drops them, so the receiver below never matches.
+        // Android 14+ allows a mutable PendingIntent here because the intent
+        // is package-scoped (setPackage above).
         val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         } else {
             PendingIntent.FLAG_UPDATE_CURRENT
         }
