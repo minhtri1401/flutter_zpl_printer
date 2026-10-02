@@ -1,3 +1,67 @@
+## 0.1.0
+
+**Breaking: full rewrite.** The plugin no longer wraps Zebra's Link-OS SDK. It now
+ships a pure-Dart protocol stack (SGD, ZPL `~HS` status, Zebra BLE GATT, USB
+printer class) with small native shims only where the OS requires them (USB
+enumeration and permissions). You no longer need to copy proprietary
+`libZSDK_API.a` / `ZSDK_ANDROID_API.jar` binaries into the plugin.
+
+### Added
+
+- **Three transports, one `Connection` API**
+  - Bluetooth LE: `BleConnection`, `MultichannelBleConnection` (print + status channels).
+  - Wi-Fi / Ethernet: `TcpConnection` (9100 ZPL, 6101 CPCL), `MultichannelTcpConnection` (9100 + 9200).
+  - USB: `UsbConnection`, `UsbDeviceAddress` (macOS, Windows, Android), backed by bundled libusb 1.0.29.
+  - `ReconnectableConnection` decorator with exponential backoff.
+- **Discovery**: `DiscoveryService.discoverAll()` merges USB, UDP broadcast/multicast, and BLE.
+  Each transport is also available on its own (`UsbDiscovery`, `NetworkDiscovery`, `BleDiscovery`),
+  as is TCP subnet search. `UsbHotplugStream.events()` reports plug/unplug events.
+- **`ZebraPrinter` high-level API**: `printZpl`, `getStatus`, `getSetting` / `setSetting` / `doCommand`,
+  `calibrate`, `printConfigurationLabel`, `getMetadata`, `printImage`, file and format storage, and more.
+- **Utilities**: `Sgd`, `FileUtil`, `FormatUtil`, `FontUtil`, `AlertUtil`, `ProfileUtil`, `FirmwareUtil`,
+  `GraphicsUtil` (GRF / Z64 image encoding), `ZplSanitizer`.
+- **Typed errors**: `ConnectionException` plus 11 USB-specific subclasses (`UsbPermissionDeniedException`,
+  `UsbDeviceBusyException` with a `remediation` hint, and others).
+- **`PrinterSgdKey`**: a catalog of verified Zebra SGD keys, grouped by category.
+- **Test support**: `package:flutter_zpl_printer/flutter_zpl_printer_testing.dart` exports `FakeUsbPlatform`.
+- **New platforms**: macOS and Windows.
+
+### Removed
+
+The 0.0.1 API is gone. Migration:
+
+| 0.0.1 | 0.1.0 |
+| :--- | :--- |
+| `FlutterZplPrinter().startDiscovery()` + `onPrinterFound` | `DiscoveryService.discoverAll()` (a `Stream<DiscoveredPrinter>`) |
+| `connect(address, ConnectionType.bluetooth)` | `ZebraPrinter.connect(BleConnection(deviceId))` |
+| `connect(address, ConnectionType.wifi)` | `ZebraPrinter.connect(TcpConnection.zpl(ip))` |
+| `printZpl(zpl)` | `printer.printZpl(zpl)` |
+| `getStatus()` | `printer.getStatus()` |
+| `getSettings()` | `printer.getSetting('allcv')` (raw text), or `printer.getMetadata()` |
+| `disconnect()` | `printer.disconnect()` |
+
+Classic Bluetooth (iOS MFi / Android SPP) is not supported in 0.1.0. Use Bluetooth LE, which Zebra
+printers with Bluetooth 4.0 or later support.
+
+### Platform status
+
+Tested on hardware with the iOS, macOS, and Windows builds:
+
+| Transport | iOS | macOS | Windows | Android |
+| :--- | :---: | :---: | :---: | :---: |
+| Bluetooth LE | ✅ | ✅ | ✅ | not tested |
+| Wi-Fi / TCP | ✅ | ✅ | ✅ | not tested |
+| USB | n/a (no USB host on iOS) | ✅ | ⚠️ known issue | not tested |
+
+### Known issues
+
+- **Windows USB does not work reliably yet.** See
+  [Known issues → Windows USB](https://github.com/minhtri1401/flutter_zpl_printer#windows-usb)
+  in the README for symptoms, likely causes, and workarounds. Bluetooth LE and Wi-Fi work on Windows.
+  Track progress or report details on the [issue tracker](https://github.com/minhtri1401/flutter_zpl_printer/issues).
+- **Android USB** needs `libusb-1.0.so` built per ABI. The package does not ship it yet,
+  so Android USB calls fail with `UsbLibLoadException`.
+
 ## 0.0.1
 
 * Initial release.

@@ -1,8 +1,16 @@
 # Development files not needed in published package
 CLAUDE.md
+DEVELOPING.md
+llms.txt
 plans/
 specs/
 doc/
 docs/
 Users/
 .claude/
+.fvm/
+build/
+example/build/
+example/sgds.txt
+windows/test/
+android/src/test/

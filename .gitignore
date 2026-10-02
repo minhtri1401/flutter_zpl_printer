@@ -31,8 +31,4 @@ migrate_working_dir/
 .flutter-plugins-dependencies
 /build/
 /coverage/
-
-# Zebra SDK binaries (proprietary, must be manually copied)
-ios/Frameworks/libZSDK_API.a
-ios/Frameworks/include/
-android/libs/*.jar
+.fvm/

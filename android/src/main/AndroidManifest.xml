@@ -1,3 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.example.flutter_zpl_printer">
+  <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
+  <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+  <uses-permission android:name="android.permission.INTERNET"/>
+
+  <!-- USB host mode is not privileged; we just declare the feature as optional. -->
+  <uses-feature android:name="android.hardware.usb.host" android:required="false"/>
 </manifest>

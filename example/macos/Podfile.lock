@@ -1,0 +1,29 @@
+PODS:
+  - flutter_zpl_printer (0.1.0):
+    - FlutterMacOS
+  - FlutterMacOS (1.0.0)
+  - universal_ble (0.0.1):
+    - Flutter
+    - FlutterMacOS
+
+DEPENDENCIES:
+  - flutter_zpl_printer (from `Flutter/ephemeral/.symlinks/plugins/flutter_zpl_printer/macos`)
+  - FlutterMacOS (from `Flutter/ephemeral`)
+  - universal_ble (from `Flutter/ephemeral/.symlinks/plugins/universal_ble/darwin`)
+
+EXTERNAL SOURCES:
+  flutter_zpl_printer:
+    :path: Flutter/ephemeral/.symlinks/plugins/flutter_zpl_printer/macos
+  FlutterMacOS:
+    :path: Flutter/ephemeral
+  universal_ble:
+    :path: Flutter/ephemeral/.symlinks/plugins/universal_ble/darwin
+
+SPEC CHECKSUMS:
+  flutter_zpl_printer: be0e0a572c42d6bde921791d3372de43974d0581
+  FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
+  universal_ble: 45519b2aeafe62761e2c6309f8927edb5288b914
+
+PODFILE CHECKSUM: 13edfb9e70ac3646927b8e6c9a212ad1d0fa29b2
+
+COCOAPODS: 1.16.2

@@ -2,3 +2,8 @@ include: package:flutter_lints/flutter.yaml
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
+
+analyzer:
+  exclude:
+    # Pigeon-generated test API; regenerated, not hand-edited.
+    - test/platform/usb_messages_test_api.g.dart

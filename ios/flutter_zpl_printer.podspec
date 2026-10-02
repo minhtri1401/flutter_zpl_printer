@@ -1,26 +1,31 @@
+#
+# To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
+# Run `pod lib lint flutter_zpl_printer.podspec` to validate before publishing.
+#
 Pod::Spec.new do |s|
   s.name             = 'flutter_zpl_printer'
-  s.version          = '0.0.1'
-  s.summary          = 'Flutter plugin for Zebra ZPL printers'
+  s.version          = '0.1.0'
+  s.summary          = 'Flutter plugin for Zebra ZPL label printers (BLE, TCP, USB).'
   s.description      = <<-DESC
-Integrates Zebra Link-OS SDK for printer discovery, connection, and ZPL printing.
+Discover, connect to, and print on Zebra ZPL label printers over Bluetooth LE, Wi-Fi/TCP, and USB.
                        DESC
   s.homepage         = 'https://github.com/minhtri1401/flutter_zpl_printer'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'minhtri1401' => 'https://github.com/minhtri1401' }
   s.source           = { :path => '.' }
-  s.source_files     = 'Classes/**/*'
+  # Classes/Usb and Classes/UsbMessages.g.swift are symlinks into ../darwin/
+  # so the iOS and macOS plugins share one Swift codebase.
+  s.source_files = 'Classes/**/*.swift'
   s.dependency 'Flutter'
-  s.platform         = :ios, '13.0'
+  s.platform = :ios, '13.0'
 
-  # Zebra Link-OS SDK (static library + headers)
-  s.vendored_libraries = 'Frameworks/libZSDK_API.a'
-  s.frameworks         = 'ExternalAccessory'
-
-  s.pod_target_xcconfig = {
-    'DEFINES_MODULE' => 'YES',
-    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386',
-    'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/Frameworks/include'
-  }
+  # Flutter.framework does not contain a i386 slice.
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.0'
+
+  # If your plugin requires a privacy manifest, for example if it uses any
+  # required reason APIs, update the PrivacyInfo.xcprivacy file to describe your
+  # plugin's privacy impact, and then uncomment this line. For more information,
+  # see https://developer.apple.com/documentation/bundleresources/privacy_manifest_files
+  # s.resource_bundles = {'flutter_zpl_printer_privacy' => ['Resources/PrivacyInfo.xcprivacy']}
 end

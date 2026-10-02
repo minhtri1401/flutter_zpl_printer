@@ -1,0 +1,65 @@
+# flutter_zpl_printer - Agent Traversal Guide and Knowledge Base
+
+> A pure-Dart Flutter library for parsing, managing, and connecting to Zebra label printers by speaking Zebra's native printer protocols (SGD, ZPL, and BLE characteristics) directly without depending on the heavy, native Link-OS SDK.
+
+This file `llms.txt` serves as the root technical and architectural map for AI coding agents. It provides a highly structured schema of the codebase so you can quickly traverse, query, and modify the application safely.
+
+## 🧭 Agent Task Matrix (How to Navigate)
+
+When you receive a specific task, use the routing matrix below to locate exactly which files and modules you need. Do NOT guess file names; use the paths provided.
+
+| Task Category | Target Directory | Key Files to Edit / View |
+|---------------|------------------|--------------------------|
+| **Connection & Networking** | `lib/src/connection/` | `tcp_connection.dart`, `ble_connection.dart`, `reconnectable_connection.dart` |
+| **Parsing ZPL or Host Status** | `lib/src/printer/` | `printer_status.dart`, `sgd.dart`, `zebra_printer.dart` |
+| **Adding a New Link-OS Feature**| `lib/src/printer/` | `zebra_printer_link_os.dart`, `profile_util.dart`, `firmware_util.dart` |
+| **BLE Discovery/Scanning** | `lib/src/discovery/` | `ble_discovery.dart`, `discovery_service.dart` |
+| **Image & GRF Manipulation** | `lib/src/graphics/` | `grf_encoder.dart`, `graphics_util.dart` |
+| **Printer Discovery on Network**| `lib/src/discovery/` | `network_discovery.dart` |
+
+## 📁 System Architecture Map
+
+The project separates the logic into well-defined, abstracted layers. All print commands and printer queries communicate over a unified `Connection` interface.
+
+### 1. Connection Interfaces (`lib/src/connection/`)
+The foundational transport layer.
+- **`connection.dart`**: Defines the `Connection` abstract class. All I/O delegates here. Important methods: `write()`, `sendAndWaitForValidResponse()`.
+- **`tcp_connection.dart`**: Implements raw TCP/Socket connection. Uses port `9100` (ZPL) or `6101` (CPCL).
+- **`ble_connection.dart`**: Implements Bluetooth Low Energy via `universal_ble`. Uses strict Zebra characteristics (`38eb4a80-...`).
+- **`reconnectable_connection.dart`**: A decorator for auto-reconnection with exponential backoff on `ConnectionClosedException`.
+
+### 2. High-Level Printer APIs (`lib/src/printer/`)
+The semantic operations to manage the device. Structured as static utility classes to keep the API surface clean.
+- **`zebra_printer.dart`**: The main facade instance (`ZebraPrinter`). Combines all static utilities into an instance for ease of use.
+- **`sgd.dart`**: Implements Set-Get-Do (`! U1 getvar`). Used to query printer capabilities.
+- **`format_util.dart` & `file_util.dart`**: Manage internal `E:` and `R:` drives to store label templates or data.
+- **`printer_status.dart`**: Essential for parsing the deeply nested `~HS` status response into manageable Dart properties.
+- **`zebra_printer_link_os.dart`**: A Dart `extension` on `ZebraPrinter` to inject Link-OS enterprise features (Firmware uploads, Config clone/Backup via `.zip`).
+
+### 3. Graphics Encoding (`lib/src/graphics/`)
+Handling images for the `^GF` and `~DY` ZPL commands.
+- **`grf_encoder.dart`**: Converts `image` package objects into dithering monochrome bitmaps, and encodes them into Hex.
+- **`z64_compressor.dart`**: Optional Deflate/base64 compressor to speed up over-the-air printing.
+
+## ⚠️ Critical Agent Rules & Constraints
+
+1. **Protocol Adherence:** The SDK interacts via `! U1` (SGD), `^` (ZPL logic), and `~` (ZPL status/commands). You must correctly format the newlines. For SGD, it must end in `\r\n`.
+2. **Chunking Responses:** Due to embedded hardware limits, payloads exceeding 512-1024 bytes MUST be chunked in the Connection logic (see `ConnectionConfig.maxChunkSize`).
+3. **Response Validators:** Always use the `ResponseValidators` pattern in `lib/src/connection/response_validators.dart` to determine when a printer response completes instead of relying on pure timeouts.
+4. **Mocking First:** The library uses `MockConnection` from `test/mocks/mock_connection.dart`. All CI tests run without hardware. Verify your business logic via `fvm flutter test` targeting your mock.
+5. **FVM Required:** Always use `fvm flutter ...` instead of `flutter ...`.
+
+## 🔎 Agent Traversal Queries
+
+When looking for specific functionalities, use these highly optimized tool `grep_search` patterns to find usages context:
+
+- Find all ZPL formatting logic: `grep_search(Query: "^[~^][A-Z0-9]{2}", IsRegex: true)`
+- Find Response Validator definitions: `grep_search(Query: "class ResponseValidators")`
+- Find BLE Data characteristic subscriptions: `grep_search(Query: "setNotifiable")`
+
+## 📚 Detailed Documentation Links
+To drill deeper, fetch the context of the highly-detailed Markdown manuals available in the `docs/` folder:
+- [System Architecture](file:///Users/minhtri/project/flutter_zpl_printer_all/docs/system-architecture.md)
+- [Codebase Summary](file:///Users/minhtri/project/flutter_zpl_printer_all/docs/codebase-summary.md)
+- [Development Roadmap](file:///Users/minhtri/project/flutter_zpl_printer_all/docs/development-roadmap.md)
+- [Code Standards](file:///Users/minhtri/project/flutter_zpl_printer_all/docs/code-standards.md)

@@ -1,76 +1,64 @@
-import 'dart:async';
+/// Pure-Dart library for Zebra label printers via BLE, TCP, and USB.
+///
+/// No Link-OS SDK dependency. Communicates directly using Zebra's native
+/// printer protocols (SGD, ZPL status, BLE characteristics).
+library;
 
-import 'src/pigeon.g.dart';
+// Exceptions
+export 'src/exceptions/connection_exception.dart';
 
-export 'src/pigeon.g.dart' show PrinterDevice, PrinterStatus, ConnectionType;
+// Connection layer
+export 'src/connection/connection.dart';
+export 'src/connection/connection_config.dart';
+export 'src/connection/tcp_connection.dart';
+export 'src/connection/ble_connection.dart';
+export 'src/connection/bluetooth_constants.dart';
+export 'src/connection/multichannel_tcp_connection.dart';
+export 'src/connection/response_validators.dart';
+export 'src/connection/reconnectable_connection.dart';
+export 'src/connection/multichannel_ble_connection.dart';
+export 'src/connection/usb_connection.dart';
+export 'src/connection/usb_device_address.dart';
 
-class FlutterZplPrinter {
-  FlutterZplPrinter() {
-    PrinterFlutterApi.setUp(_flutterApiHandler);
-  }
+// Discovery layer
+export 'src/discovery/discovered_printer.dart';
+export 'src/discovery/network_discovery.dart';
+export 'src/discovery/ble_discovery.dart';
+export 'src/discovery/discovery_service.dart';
+export 'src/discovery/usb_discovery.dart';
+export 'src/discovery/zebra_name_parser.dart';
 
-  final PrinterHostApi _hostApi = PrinterHostApi();
-  final _PrinterFlutterApiHandler _flutterApiHandler =
-      _PrinterFlutterApiHandler();
+// Platform (public types only — hotplug stream)
+export 'src/platform/usb_hotplug_stream.dart'
+    show UsbHotplugEvent, UsbHotplugType, UsbHotplugStream;
 
-  /// Stream of printers found during discovery.
-  Stream<PrinterDevice> get onPrinterFound =>
-      _flutterApiHandler.printerFoundController.stream;
+// Printer operations
+export 'src/printer/sgd.dart';
+export 'src/printer/printer_status.dart';
+export 'src/printer/printer_language.dart';
+export 'src/printer/zebra_printer.dart';
+export 'src/printer/zebra_printer_link_os.dart';
+export 'src/printer/file_util.dart';
+export 'src/printer/format_util.dart';
+export 'src/printer/font_util.dart';
+export 'src/printer/alert_util.dart';
+export 'src/printer/zpl_sanitizer.dart';
+export 'src/printer/profile_util.dart';
+export 'src/printer/profile_constants.dart';
+export 'src/printer/firmware_util.dart';
 
-  /// Emits when discovery completes.
-  Stream<void> get onDiscoveryCompleted =>
-      _flutterApiHandler.discoveryCompletedController.stream;
+// Graphics
+export 'src/graphics/grf_encoder.dart';
+export 'src/graphics/z64_compressor.dart';
+export 'src/graphics/graphics_util.dart';
 
-  /// Start scanning for printers (Wi-Fi + Bluetooth).
-  Future<void> startDiscovery() => _hostApi.startDiscovery();
-
-  /// Stop scanning for printers.
-  void stopDiscovery() => _hostApi.stopDiscovery();
-
-  /// Connect to printer at [address] using [type].
-  Future<void> connect(String address, ConnectionType type) =>
-      _hostApi.connect(address, type);
-
-  /// Disconnect current printer.
-  void disconnect() => _hostApi.disconnect();
-
-  /// Send ZPL payload to connected printer.
-  Future<void> printZpl(String zplPayload) => _hostApi.printZpl(zplPayload);
-
-  /// Get current printer status.
-  Future<PrinterStatus> getStatus() => _hostApi.getStatus();
-
-  /// Get all printer settings as key-value pairs.
-  Future<Map<String, String>> getSettings() async {
-    final settings = await _hostApi.getSettings();
-    return {
-      for (final e in settings.entries)
-        if (e.key != null && e.value != null) e.key!: e.value!,
-    };
-  }
-
-  /// Clean up stream controllers.
-  void dispose() {
-    _flutterApiHandler.dispose();
-  }
-}
-
-class _PrinterFlutterApiHandler implements PrinterFlutterApi {
-  final printerFoundController = StreamController<PrinterDevice>.broadcast();
-  final discoveryCompletedController = StreamController<void>.broadcast();
-
-  @override
-  void onPrinterFound(PrinterDevice printer) {
-    printerFoundController.add(printer);
-  }
-
-  @override
-  void onDiscoveryCompleted() {
-    discoveryCompletedController.add(null);
-  }
-
-  void dispose() {
-    printerFoundController.close();
-    discoveryCompletedController.close();
-  }
-}
+// Models
+export 'src/models/zpl_print_mode.dart';
+export 'src/models/storage_info.dart';
+export 'src/models/printer_object.dart';
+export 'src/models/field_description.dart';
+export 'src/models/link_os_version.dart';
+export 'src/models/printer_alert.dart';
+export 'src/models/printer_profile.dart';
+export 'src/models/printer_metadata_key.dart';
+export 'src/models/printer_sgd_key.dart';
