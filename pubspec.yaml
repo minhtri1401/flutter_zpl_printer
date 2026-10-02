@@ -4,6 +4,7 @@ version: 0.1.0
 homepage: https://github.com/minhtri1401/flutter_zpl_printer
 repository: https://github.com/minhtri1401/flutter_zpl_printer
 issue_tracker: https://github.com/minhtri1401/flutter_zpl_printer/issues
+documentation: https://github.com/minhtri1401/flutter_zpl_printer/blob/main/GUIDE.md
 topics:
   - zebra
   - zpl

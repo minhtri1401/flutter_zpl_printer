@@ -1,7 +1,6 @@
 # Development files not needed in published package
 CLAUDE.md
 DEVELOPING.md
-llms.txt
 plans/
 specs/
 doc/

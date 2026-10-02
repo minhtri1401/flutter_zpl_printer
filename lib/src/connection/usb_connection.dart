@@ -13,6 +13,11 @@ import 'usb_device_address.dart';
 /// USB [Connection] backed by a native platform channel for lifecycle and
 /// libusb FFI for bulk I/O.
 ///
+/// Platform status in this release: works on macOS; fails in testing on
+/// Windows (cause not yet confirmed, see the README's "Known issues"); not
+/// tested on Android, where `libusb-1.0.so` is not bundled; not possible on
+/// iOS, where [open] throws [UsbUnsupportedOnPlatformException].
+///
 /// Lifecycle flow:
 ///   1. [open] checks platform support, requests permission (Android) if
 ///      needed, calls `openForFfi` to get a handle, verifies identity,

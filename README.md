@@ -15,20 +15,25 @@ for building the ZPL you send.
 > **Upgrading from 0.0.1?** 0.1.0 is a full rewrite with a new API.
 > See the [migration table in the changelog](CHANGELOG.md#removed).
 
+📘 **[Integration guide](GUIDE.md)**: availability checks, discovery, transport fallback, printing,
+settings, error handling, and troubleshooting, based on a production app.
+
 ---
 
 ## Platform support
 
 | Transport | iOS | macOS | Windows | Android |
 | :--- | :---: | :---: | :---: | :---: |
-| Bluetooth LE | ✅ | ✅ | ✅ | ⚪ not tested |
-| Wi-Fi / TCP | ✅ | ✅ | ✅ | ⚪ not tested |
-| USB | ➖ not available | ✅ | ⚠️ [known issue](#windows-usb) | ⚪ [needs libusb build](#android-usb) |
+| Bluetooth LE | ✅ | ✅ | ✅ | ✅ |
+| Wi-Fi / TCP | ✅ | ✅ | ✅ | ✅ |
+| USB | ➖ not possible | ✅ | ❌ [fails in testing](#windows-usb) | ⚪ [not tested, libusb not bundled](#android-usb) |
 
-✅ tested on hardware · ⚠️ known issue · ⚪ implemented, not verified on hardware · ➖ platform limitation
+✅ works in hardware testing · ❌ fails in hardware testing · ⚪ code exists, not verified on hardware · ➖ platform limitation
 
-iOS gives apps no USB host access to printers, so `UsbHostApi.isSupported()` returns
-`false` there and USB calls throw `UsbUnsupportedOnPlatformException`.
+**USB, in short:** it works on macOS. It fails on Windows in our testing, and the cause isn't
+confirmed yet. It's untested on Android, and iOS doesn't allow it (USB calls throw
+`UsbUnsupportedOnPlatformException`). If you need wired printing on Windows today, use Wi-Fi
+instead.
 
 ---
 
@@ -172,7 +177,8 @@ try {
 }
 ```
 
-The [example app](example/lib/main.dart) shows all three transports end to end.
+The [example app](example/lib/main.dart) shows all three transports end to end. The
+[integration guide](GUIDE.md) covers the production details.
 
 ---
 
@@ -194,16 +200,21 @@ The [example app](example/lib/main.dart) shows all three transports end to end.
 ### SGD example
 
 ```dart
-final darkness = await Sgd.get(PrinterSgdKey.printToneZpl.value, connection);
-await Sgd.set('device.friendly_name', 'Warehouse-01', connection);
-await Sgd.doCommand('device.reset', '', connection);
+final darkness = await Sgd.get(PrinterSgdKey.headDarknessSwitch.value, connection);
+await Sgd.set(PrinterSgdKey.deviceFriendlyName.value, 'Warehouse-01', connection);
+
+// Sgd.doCommand waits for a reply. Actions like device.reset never send one,
+// so write those directly:
+await connection.write(Uint8List.fromList(utf8.encode('! U1 do "device.reset" ""\r\n')));
 ```
 
 ### USB details
 
-USB is part of `DiscoveryService.discoverAll()` by default. Machines without libusb just return no USB results.
+Check the [platform table](#platform-support) first. USB is part of `DiscoveryService.discoverAll()`
+by default, and USB failures there are swallowed, so other transports keep working.
 
 ```dart
+// Plug/unplug events: macOS and Android. Not emitted on Windows yet.
 UsbHotplugStream.events().listen((e) => print('${e.type} → ${e.address}'));
 
 const cfg = ConnectionConfig(
@@ -235,25 +246,32 @@ final conn = UsbConnection.withPlatform(UsbDeviceAddress.parse('usb://0A5F:0027/
 
 ### Windows USB
 
-**Status:** USB printing on Windows is not working reliably in 0.1.0. Bluetooth LE and Wi-Fi work on
-Windows; macOS USB is unaffected. If you hit this, please add your printer model, Windows version, and
-the exception text to the [issue tracker](https://github.com/minhtri1401/flutter_zpl_printer/issues).
+**Status: USB printing on Windows failed when tested with Zebra printers. The cause is not
+confirmed yet.** Bluetooth LE and Wi-Fi work on Windows; macOS USB is unaffected. Until this is
+fixed, treat Windows USB as experimental and offer Wi-Fi or Bluetooth.
 
-What to check:
+What the Windows USB code does in 0.1.0:
 
-1. **Is `libusb-1.0.dll` next to your `.exe`?** The Windows build copies it from
-   `third_party/libusb/1.0.29/windows/<x64|arm64>/libusb-1.0.dll`. 0.1.0 does not ship that DLL yet.
-   Without it the build prints the CMake warning `libusb-1.0.dll not found` and USB calls fail with
-   `UsbLibLoadException`. Workaround: download the official
-   [libusb 1.0.29 Windows binaries](https://github.com/libusb/libusb/releases/tag/v1.0.29) and put
-   `VS2022/MS64/dll/libusb-1.0.dll` next to your app's executable (or run `tool/fetch_libusb.sh`
-   in a checkout of this package).
-2. **Which driver owns the printer?** If Zebra Setup Utilities or the ZDesigner driver is installed,
-   Windows binds the printer to `usbprint` and libusb cannot claim it. You get
-   `UsbDeviceBusyException`; show its `remediation` text to the user. Workaround: rebind the device to
-   WinUSB with [Zadig](https://zadig.akeo.ie/). After that, the Windows print spooler can no longer use
-   the printer.
-3. **Fallback:** print over Wi-Fi or Bluetooth LE on Windows until this is fixed.
+- Lists printers with Windows SetupAPI.
+- Opens them through libusb (`libusb-1.0.dll`), assuming interface 0, bulk endpoints `0x01` / `0x81`,
+  and 64-byte packets. It doesn't read these from the printer yet.
+- Does not emit plug/unplug events. `UsbHotplugStream.events()` stays silent on Windows.
+
+Possible causes we're investigating:
+
+1. **`libusb-1.0.dll` is not bundled.** If the build log says `libusb-1.0.dll not found`, opens fail with
+   `UsbLibLoadException`. Workaround: put the official
+   [libusb 1.0.29](https://github.com/libusb/libusb/releases/tag/v1.0.29) `VS2022/MS64/dll/libusb-1.0.dll`
+   next to your app's `.exe`.
+2. **The printer is bound to the Windows printer driver.** With Zebra Setup Utilities / ZDesigner installed,
+   Windows binds the printer to `usbprint` and libusb can't claim it. You get `UsbDeviceBusyException`;
+   show its `remediation` text. Rebinding to WinUSB with [Zadig](https://zadig.akeo.ie/) gives libusb
+   access, but then the Windows print queue can't use the printer.
+3. **The assumed endpoints don't match the printer.** That would show as a transfer timeout or stall on
+   write.
+
+If you try it, please report your printer model, Windows version, the driver shown in Device Manager,
+and the exception text on the [issue tracker](https://github.com/minhtri1401/flutter_zpl_printer/issues).
 
 ### Android USB
 

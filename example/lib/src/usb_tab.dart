@@ -88,15 +88,15 @@ class _UsbTabState extends State<UsbTab> with AutomaticKeepAliveClientMixin {
         if (Platform.isWindows)
           const NoticeCard(
             warning: true,
-            message: 'Known issue: USB on Windows is unreliable in this release. '
-                'It needs libusb-1.0.dll next to the app and the printer bound to '
-                'WinUSB (not the ZDesigner driver). See "Known issues" in the README. '
-                'Bluetooth and Wi-Fi work on Windows.',
+            message: 'USB printing failed in our Windows testing, and the cause '
+                'is not confirmed yet. Use Wi-Fi or Bluetooth on Windows for now. '
+                'Plug/unplug is not detected on Windows: tap Refresh. '
+                'See "Known issues → Windows USB" in the README.',
           ),
         if (Platform.isAndroid)
           const NoticeCard(
-            message: 'Android USB needs libusb-1.0.so, which this release does not '
-                'bundle yet. See "Known issues" in the README.',
+            message: 'Android USB is untested, and this release does not bundle '
+                'libusb-1.0.so, so connecting will fail. See "Known issues" in the README.',
           ),
         Padding(
           padding: const EdgeInsets.all(16),
@@ -125,7 +125,7 @@ class _UsbTabState extends State<UsbTab> with AutomaticKeepAliveClientMixin {
           child: _printers.isEmpty
               ? const EmptyHint(
                   icon: Icons.usb,
-                  message: 'Plug in a Zebra printer.\nThe list updates automatically.',
+                  message: 'Plug in a Zebra printer, then tap Refresh.',
                 )
               : ListView(
                   children: [

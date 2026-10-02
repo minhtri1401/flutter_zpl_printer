@@ -44,6 +44,9 @@ class UsbHotplugEvent {
 
 /// Broadcast stream of USB attach/detach events.
 ///
+/// Emits on macOS and Android. Windows does not emit events yet, and iOS
+/// never does.
+///
 /// Native side starts emitting on first listen, stops on last cancel. Payload
 /// shape defined in the USB transport spec §3.3. All three platforms emit the
 /// same dictionary — Dart side does not branch.

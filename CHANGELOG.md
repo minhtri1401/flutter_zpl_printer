@@ -25,6 +25,7 @@ enumeration and permissions). You no longer need to copy proprietary
 - **`PrinterSgdKey`**: a catalog of verified Zebra SGD keys, grouped by category.
 - **Test support**: `package:flutter_zpl_printer/flutter_zpl_printer_testing.dart` exports `FakeUsbPlatform`.
 - **New platforms**: macOS and Windows.
+- **[Integration guide](GUIDE.md)** based on a production app.
 
 ### Removed
 
@@ -45,20 +46,22 @@ printers with Bluetooth 4.0 or later support.
 
 ### Platform status
 
-Tested on hardware with the iOS, macOS, and Windows builds:
+Tested on hardware with Zebra printers:
 
 | Transport | iOS | macOS | Windows | Android |
 | :--- | :---: | :---: | :---: | :---: |
-| Bluetooth LE | ✅ | ✅ | ✅ | not tested |
-| Wi-Fi / TCP | ✅ | ✅ | ✅ | not tested |
-| USB | n/a (no USB host on iOS) | ✅ | ⚠️ known issue | not tested |
+| Bluetooth LE | ✅ | ✅ | ✅ | ✅ |
+| Wi-Fi / TCP | ✅ | ✅ | ✅ | ✅ |
+| USB | not possible (no USB host on iOS) | ✅ | ❌ fails in testing | not tested |
 
 ### Known issues
 
-- **Windows USB does not work reliably yet.** See
-  [Known issues → Windows USB](https://github.com/minhtri1401/flutter_zpl_printer#windows-usb)
-  in the README for symptoms, likely causes, and workarounds. Bluetooth LE and Wi-Fi work on Windows.
-  Track progress or report details on the [issue tracker](https://github.com/minhtri1401/flutter_zpl_printer/issues).
+- **Windows USB failed when tested with Zebra printers; the cause is not confirmed yet.**
+  `libusb-1.0.dll` is not bundled, printers bound to the ZDesigner/`usbprint` driver can't be
+  claimed, and the open path assumes fixed endpoints. Plug/unplug events are not emitted on Windows.
+  Bluetooth LE and Wi-Fi work on Windows. Details and workarounds:
+  [Known issues → Windows USB](https://github.com/minhtri1401/flutter_zpl_printer#windows-usb).
+  Please report results on the [issue tracker](https://github.com/minhtri1401/flutter_zpl_printer/issues).
 - **Android USB** needs `libusb-1.0.so` built per ABI. The package does not ship it yet,
   so Android USB calls fail with `UsbLibLoadException`.
 

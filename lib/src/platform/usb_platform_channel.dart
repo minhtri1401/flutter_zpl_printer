@@ -30,7 +30,7 @@ Never throwAsTyped(PlatformException e) {
         remediation:
             'Device is bound to the Windows print spooler driver. '
             'Rebind to WinUSB (via Zadig) to use direct USB access, '
-            'or print via the OS print queue.',
+            'or connect over Wi-Fi or Bluetooth instead.',
       );
     case 'USB_INTERFACE_NOT_FOUND':
       throw UsbInterfaceNotFoundException(e.message);
