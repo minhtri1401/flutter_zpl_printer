@@ -1,3 +1,25 @@
+## 0.1.2
+
+### Fixed
+
+- **Z64 checksum.** `Z64Compressor` now computes CRC-16/XMODEM over the Base64 text, as Zebra's
+  ZPL II Programming Guide specifies ("calculated over the :encoded_data field"). It was computed
+  over the raw bitmap with CRC-16/CCITT-FALSE. Matches `flutter_zpl_generator`'s implementation.
+  `Z64Compressor.crc16` now returns the XMODEM value and accepts any `List<int>`.
+
+### Changed
+
+- **`printImage` sends uncompressed hex by default.** `GraphicsUtil.printImage` defaults to
+  `useCompression: false`, since Z64 has not been verified on a printer yet. Pass
+  `useCompression: true` to opt in. `ZebraPrinter.printImage` gains the same parameter.
+
+### Example
+
+- New **Print image** section: prints a generated test picture via `flutter_zpl_generator`
+  (recommended), `printImage` (hex), and `printImage` (Z64), for side-by-side comparison on a printer.
+
+`flutter_zpl_generator` remains the recommended way to print images; it's the path tested on hardware.
+
 ## 0.1.1
 
 ### Documentation

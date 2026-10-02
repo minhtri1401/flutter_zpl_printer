@@ -462,11 +462,11 @@ Why these settings, from zPrint:
   can hold labels instead of printing them.
 - **`autoLabelLengthFromFirstImage`** sets the label length to the image height.
 
-> **Avoid `printer.printImage(...)` / `GraphicsUtil.printImage(...)` in 0.1.x.** They compress with
-> Z64 by default, and the Z64 checksum is computed over the raw bitmap instead of the Base64 text
-> that Zebra's manual specifies. A printer that checks it treats the image as an aborted download.
-> If you must use them, pass `useCompression: false`. See
-> [Known issues](README.md#image-compression-z64).
+> **This package's `printer.printImage(...)` / `GraphicsUtil.printImage(...)` haven't been verified
+> on a printer yet.** Prefer `flutter_zpl_generator` for production. On 0.1.0–0.1.1 they default to
+> Z64 with a wrong checksum (pass `useCompression: false`). From 0.1.2 they default to uncompressed
+> hex, and Z64 (`useCompression: true`) follows Zebra's spec. The example app's **Print image**
+> section prints all three variants for comparison. See [Known issues](README.md#image-compression-z64).
 
 ### Printer info in one call
 
@@ -629,5 +629,5 @@ subclass `Connection` to record writes and return canned replies.
 | USB printer not listed (macOS) | Sandboxed app without `com.apple.security.device.usb`? Try `includeNonZebra: true`. |
 | USB on Windows fails | See [section 5](#windows-what-the-code-does-and-what-might-be-wrong). Use Wi-Fi or Bluetooth for now. |
 | `UsbLibLoadException` | libusb isn't next to the app (Windows) or wasn't built into the APK (Android). |
-| Image prints blank or not at all | Using `printImage` / `GraphicsUtil.printImage`? Switch to `flutter_zpl_generator` ([section 6](#images-use-flutter_zpl_generator)) or pass `useCompression: false`. |
+| Image prints blank or not at all | Using `printImage` / `GraphicsUtil.printImage`? Switch to `flutter_zpl_generator` ([section 6](#images-use-flutter_zpl_generator)). On 0.1.0–0.1.1, pass `useCompression: false` or upgrade to 0.1.2. |
 | A reset or other action hangs | You used `doCommand` for an action that never replies. Write the packet directly ([section 7](#actions-do-commands)). |

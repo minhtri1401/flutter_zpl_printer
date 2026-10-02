@@ -29,6 +29,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   permission_handler: ^11.3.1
+  # Image demo: flutter_zpl_generator builds image labels; image draws the test picture.
+  flutter_zpl_generator: ^2.2.0
+  image: ^4.8.0
 
 dev_dependencies:
   integration_test:

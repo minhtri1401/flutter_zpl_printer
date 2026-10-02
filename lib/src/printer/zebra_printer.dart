@@ -142,25 +142,25 @@ class ZebraPrinter {
 
   /// Print an image inline at position (x, y).
   ///
-  /// Uses [GraphicsUtil.printImage] with its default Z64 compression.
+  /// See [GraphicsUtil.printImage]. Sends uncompressed hex unless
+  /// [useCompression] is set (Z64, not yet verified on a printer).
   ///
-  /// **Known issue (0.1.x):** the default Z64 compression computes its CRC
-  /// over the raw bitmap, but Zebra's ZPL II Programming Guide requires it
-  /// over the Base64-encoded data, so a printer that checks the CRC can drop
-  /// the image. Prefer building image labels with `flutter_zpl_generator`
-  /// and sending them with `printZpl`, or call
-  /// [GraphicsUtil.printImage] with `useCompression: false`.
+  /// For production image printing, `flutter_zpl_generator` is the path
+  /// tested on hardware: build the label with it and send it with
+  /// [printZpl].
   Future<void> printImage(
     Uint8List imageBytes, {
     int x = 0,
     int y = 0,
     int? targetWidth,
+    bool useCompression = false,
   }) => GraphicsUtil.printImage(
     connection,
     imageBytes,
     x: x,
     y: y,
     targetWidth: targetWidth,
+    useCompression: useCompression,
   );
 
   /// Store an image on the printer as a GRF file.

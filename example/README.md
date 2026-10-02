@@ -15,6 +15,8 @@ Tap a printer to open the printer screen:
 - print editable ZPL (`printZpl`)
 - print a configuration label (`printConfigurationLabel`) and calibrate media (`calibrate`)
 - read any SGD setting (`getSetting`)
+- print a test picture three ways: `flutter_zpl_generator` (recommended, tested on hardware), and this
+  package's `printImage` uncompressed and with Z64 (not yet verified on a printer)
 
 Source layout:
 
@@ -25,6 +27,7 @@ lib/src/wifi_tab.dart     network discovery + manual IP
 lib/src/usb_tab.dart      USB enumeration + hot-plug
 lib/src/printer_page.dart connected printer screen
 lib/src/common.dart       connect helper, error messages, shared widgets
+lib/src/test_image.dart   draws the test picture used by "Print image"
 ```
 
 Run it:

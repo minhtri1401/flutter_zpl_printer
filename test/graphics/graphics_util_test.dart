@@ -27,8 +27,16 @@ void main() {
   });
 
   group('GraphicsUtil.printImage', () {
+    test('sends uncompressed hex by default', () async {
+      await GraphicsUtil.printImage(conn, testPng);
+
+      final written = conn.allWrittenString;
+      expect(written, contains('^GFA,'));
+      expect(written, isNot(contains(':Z64:')));
+    });
+
     test('sends ^GF command with compression', () async {
-      await GraphicsUtil.printImage(conn, testPng, x: 50, y: 100);
+      await GraphicsUtil.printImage(conn, testPng, x: 50, y: 100, useCompression: true);
 
       final written = conn.allWrittenString;
       expect(written, startsWith('^XA'));

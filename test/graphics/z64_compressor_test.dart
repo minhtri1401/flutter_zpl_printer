@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -45,9 +47,25 @@ void main() {
       expect(Z64Compressor.crc16(data1), isNot(Z64Compressor.crc16(data2)));
     });
 
-    test('crc16 of empty data returns known value', () {
-      final crc = Z64Compressor.crc16(Uint8List(0));
-      expect(crc, 0xFFFF); // CRC-CCITT initial value with no data
+    test('crc16 of empty data is the XMODEM initial value', () {
+      expect(Z64Compressor.crc16(Uint8List(0)), 0x0000);
+    });
+
+    test('crc16 matches the CRC-16/XMODEM check value', () {
+      // Standard check vector; flutter_zpl_generator documents the same.
+      expect(Z64Compressor.crc16(ascii.encode('123456789')), 0x31C3);
+    });
+
+    test('CRC trailer is computed over the Base64 text', () {
+      final data = Uint8List.fromList(List.generate(500, (i) => i % 7));
+
+      final parts = Z64Compressor.compress(data).split(':');
+      final b64 = parts[2];
+      final crc = int.parse(parts[3], radix: 16);
+
+      expect(crc, Z64Compressor.crc16(ascii.encode(b64)));
+      expect(crc, isNot(Z64Compressor.crc16(data)));
+      expect(zlib.decode(base64Decode(b64)), data); // body round-trips
     });
   });
 }

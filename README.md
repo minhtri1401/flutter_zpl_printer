@@ -41,7 +41,7 @@ Wi-Fi for production printing.
 
 ```yaml
 dependencies:
-  flutter_zpl_printer: ^0.1.1
+  flutter_zpl_printer: ^0.1.2
 ```
 
 ```dart
@@ -181,7 +181,7 @@ try {
 
 **Use [`flutter_zpl_generator`](https://pub.dev/packages/flutter_zpl_generator) to turn images into ZPL**,
 then send the result with `printZpl`. This is the image path that has been tested on real printers.
-This package's own `printImage` / `GraphicsUtil` has a [known issue](#image-compression-z64) in 0.1.x.
+This package's own `printImage` / `GraphicsUtil` hasn't been verified on a printer yet ([details](#image-compression-z64)).
 
 ```dart
 import 'dart:typed_data';
@@ -237,7 +237,7 @@ The [example app](example/lib/main.dart) shows all three transports end to end. 
 - **Files and formats**: list, store, and delete files on `E:` / `R:`; store formats and print them with
   `^FN` field data (`FormatUtil.printStoredFormat`).
 - **Graphics**: convert PNG/JPEG to GRF or Z64 and print or store it (`GraphicsUtil`). For printing images,
-  prefer [`flutter_zpl_generator`](#5-print-images); see the [Z64 known issue](#image-compression-z64).
+  prefer [`flutter_zpl_generator`](#5-print-images); see [image status](#image-compression-z64).
 - **More utilities**: `FontUtil`, `AlertUtil`, `ProfileUtil` (backup / restore), `FirmwareUtil`, `ZplSanitizer`.
 
 ### SGD example
@@ -323,16 +323,24 @@ so Android USB calls fail with `UsbLibLoadException`. See `tool/fetch_libusb.sh`
 
 ### Image compression (Z64)
 
-`printer.printImage(...)` and `GraphicsUtil.printImage(...)` compress images with Z64 by default, and
-0.1.x computes the Z64 checksum over the raw bitmap. Zebra's ZPL II Programming Guide says the CRC must
-be "calculated over the :encoded_data field" and that "a CRC mismatch is treated as an aborted
-download", so a printer that checks it can drop the image. This path has not been tested on hardware.
+**Status: this package's `printImage` has not been verified on a printer yet.** For production image
+printing, use [`flutter_zpl_generator`](#5-print-images), the path tested on hardware.
 
-Workarounds:
+| Version | `printImage` default | Z64 checksum |
+| :--- | :--- | :--- |
+| 0.1.0 – 0.1.1 | Z64 compressed | ❌ computed over the raw bitmap |
+| 0.1.2+ | uncompressed hex | ✅ CRC-16/XMODEM over the Base64 text, per Zebra's spec |
 
-- **Recommended:** build image labels with `flutter_zpl_generator` and send them with `printZpl`
-  ([example](#5-print-images)).
-- Or pass `useCompression: false` to `GraphicsUtil.printImage` to send uncompressed hex.
+Zebra's ZPL II Programming Guide says the Z64 CRC is "calculated over the :encoded_data field" (the
+Base64 text) and that "a CRC mismatch is treated as an aborted download". 0.1.0 and 0.1.1 got this
+wrong, so on those versions pass `useCompression: false` or upgrade.
+
+From 0.1.2, `printImage` sends uncompressed hex unless you pass `useCompression: true`. The Z64
+checksum now matches the spec and `flutter_zpl_generator`'s implementation, but neither mode has been
+printed on hardware yet. The [example app](example/lib/src/printer_page.dart) has a **Print image**
+section that prints the same picture via `flutter_zpl_generator`, `printImage` (hex), and
+`printImage` (Z64), so you can compare them on your printer. Please share results on the
+[issue tracker](https://github.com/minhtri1401/flutter_zpl_printer/issues).
 
 Bluetooth LE / Wi-Fi printing, `printZpl`, and images built with `flutter_zpl_generator` are not affected.
 

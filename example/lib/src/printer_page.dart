@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+// Prefixed: both packages export ZplPrintMode.
+import 'package:flutter_zpl_generator/flutter_zpl_generator.dart' as zpl;
 import 'package:flutter_zpl_printer/flutter_zpl_printer.dart';
 
 import 'common.dart';
+import 'test_image.dart';
 
 const _sampleZpl = '''^XA
 ^CF0,40
@@ -84,6 +87,47 @@ class _PrinterPageState extends State<PrinterPage> {
         () => _printer.printZpl(_zplController.text),
         done: 'Sent to printer',
       );
+
+  /// Printable width in dots, as reported by the printer.
+  Future<int> _printWidth() async {
+    final raw = await _printer.getSetting(PrinterSgdKey.ezplPrintWidth.value);
+    return int.tryParse(raw.trim()) ?? 384; // 2-inch, 203 dpi fallback
+  }
+
+  /// Recommended: flutter_zpl_generator builds the label (`~DG` download +
+  /// `^XG` recall, uncompressed hex), then `printZpl` sends it. This is the
+  /// path that has been tested on real printers.
+  Future<void> _printImageWithGenerator() => _run('Printing image…', () async {
+        final width = await _printWidth();
+        final label = await zpl.ZplGenerator(
+          config: zpl.ZplConfiguration(
+            printWidth: width,
+            printMode: zpl.ZplPrintMode.tearOff,
+          ),
+          autoLabelLengthFromFirstImage: true,
+          commands: [
+            zpl.ZplImageDownload(
+              image: buildTestImagePng(),
+              targetWidth: width,
+              ditheringAlgorithm: zpl.ZplDitheringAlgorithm.threshold,
+            ),
+            const zpl.ZplImageRecall(),
+          ],
+        ).build();
+        await _printer.printZpl(label);
+      }, done: 'Image sent (flutter_zpl_generator)');
+
+  /// This package's own `printImage`: `^GFA` inline graphic. Uncompressed
+  /// hex by default; [z64] switches to Z64 compression.
+  Future<void> _printImageWithLibrary({required bool z64}) =>
+      _run('Printing image…', () async {
+        final width = await _printWidth();
+        await _printer.printImage(
+          buildTestImagePng(),
+          targetWidth: width,
+          useCompression: z64,
+        );
+      }, done: z64 ? 'Image sent (printImage, Z64)' : 'Image sent (printImage, hex)');
 
   Future<void> _readSetting() async {
     final key = _sgdController.text.trim();
@@ -184,6 +228,39 @@ class _PrinterPageState extends State<PrinterPage> {
                             ),
                     icon: const Icon(Icons.straighten),
                     label: const Text('Calibrate media'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _Section(
+            title: 'Print image',
+            children: [
+              Text(
+                'Prints the same test picture three ways. flutter_zpl_generator is the '
+                'path tested on hardware. The two printImage options have not been '
+                'verified on a printer yet: compare their output with the first.',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 12),
+              FilledButton.icon(
+                onPressed: busy ? null : _printImageWithGenerator,
+                icon: const Icon(Icons.image),
+                label: const Text('flutter_zpl_generator (recommended)'),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  OutlinedButton(
+                    onPressed: busy ? null : () => _printImageWithLibrary(z64: false),
+                    child: const Text('printImage (hex)'),
+                  ),
+                  OutlinedButton(
+                    onPressed: busy ? null : () => _printImageWithLibrary(z64: true),
+                    child: const Text('printImage (Z64)'),
                   ),
                 ],
               ),
