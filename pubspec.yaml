@@ -1,6 +1,6 @@
 name: flutter_zpl_printer
 description: "Print to Zebra label printers from Flutter over Bluetooth LE, Wi-Fi, or USB. Send ZPL, check printer status, build labels with flutter_zpl_generator. No Link-OS SDK."
-version: 0.2.0
+version: 0.2.1
 homepage: https://github.com/minhtri1401/flutter_zpl_printer
 repository: https://github.com/minhtri1401/flutter_zpl_printer
 issue_tracker: https://github.com/minhtri1401/flutter_zpl_printer/issues

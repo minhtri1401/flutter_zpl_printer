@@ -41,7 +41,7 @@ production. Details per platform are in [the guide](GUIDE.md#5-usb-what-works-to
 
 ```yaml
 dependencies:
-  flutter_zpl_printer: ^0.2.0
+  flutter_zpl_printer: ^0.2.1
 ```
 
 ```dart

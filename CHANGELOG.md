@@ -1,3 +1,24 @@
+## 0.2.1
+
+### Added
+
+- **Swift Package Manager** support on iOS and macOS. CocoaPods still works. The iOS and macOS plugins
+  now share one source tree in `darwin/`. With Flutter 3.38–3.40, keep Swift Package Manager off (the
+  default on those versions); the package's `Package.swift` needs the `FlutterFramework` package that
+  Flutter generates from 3.41.
+
+### Changed
+
+- **`universal_ble` ^2.3.0** (was ^1.2.0). If your app depends on `universal_ble` directly, raise
+  its constraint to `^2.3.0` too.
+- **macOS libusb** is built from the official libusb 1.0.29 release as a universal binary
+  (Intel and Apple silicon) and ships as `libusb.xcframework`. The previous copy was arm64-only, so
+  USB couldn't load on Intel Macs.
+
+### Documentation
+
+- Shorter README; the per-topic details live in the [integration guide](GUIDE.md).
+
 ## 0.2.0
 
 **Build and print with one import.** `flutter_zpl_printer` now depends on and re-exports
