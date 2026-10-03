@@ -121,7 +121,7 @@ Tested on hardware with Zebra printers:
   `libusb-1.0.dll` is not bundled, printers bound to the ZDesigner/`usbprint` driver can't be
   claimed, and the open path assumes fixed endpoints. Plug/unplug events are not emitted on Windows.
   Bluetooth LE and Wi-Fi work on Windows. Details and workarounds:
-  [Known issues → Windows USB](https://github.com/minhtri1401/flutter_zpl_printer#windows-usb).
+  [the guide](https://github.com/minhtri1401/flutter_zpl_printer/blob/main/GUIDE.md#windows-what-the-code-does-and-what-might-be-wrong).
   Please report results on the [issue tracker](https://github.com/minhtri1401/flutter_zpl_printer/issues).
 - **Android USB** needs `libusb-1.0.so` built per ABI. The package does not ship it yet,
   so Android USB calls fail with `UsbLibLoadException`.

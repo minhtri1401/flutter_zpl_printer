@@ -309,7 +309,7 @@ The current state of USB, as tested:
 | :--- | :--- | :--- |
 | **macOS** | ⚪ Not tested | The code is complete (IOKit enumeration, libusb bundled through the podspec), but it hasn't been tested with a printer yet. |
 | **Windows** | ❌ **Fails in our testing** | USB printing failed when tested with Zebra printers. The root cause is not confirmed yet; see below. Bluetooth LE and Wi-Fi work on Windows. |
-| **Android** | ⚪ Not tested | The code is in place, but the package does not ship `libusb-1.0.so`, so USB calls fail with `UsbLibLoadException` until you build and add it. |
+| **Android** | ⚪ Not tested | The code is in place, but the package does not ship `libusb-1.0.so`, so USB calls fail with `UsbLibLoadException` until you build and add it (see `tool/fetch_libusb.sh`). |
 | **iOS** | ➖ Not possible | iOS gives apps no USB access to printers. `UsbConnection.open()` throws `UsbUnsupportedOnPlatformException`. |
 
 **USB has not been confirmed working on any platform yet.** Ship Bluetooth LE or Wi-Fi as your
@@ -473,8 +473,11 @@ Why these settings, from zPrint:
 
 > **Lower level: `GraphicsUtil.printImage`** sends an inline `^GF` graphic instead. It hasn't been
 > verified on a printer yet. It defaults to uncompressed hex, and Z64 (`useCompression: true`) follows
-> Zebra's spec from 0.2.0. On 0.1.0–0.1.1 it defaulted to Z64 with a wrong checksum. See
-> [Known issues](README.md#image-compression-z64).
+> Zebra's spec from 0.2.0: the ZPL II Programming Guide computes the CRC-16 "over the :encoded_data
+> field" (the Base64 text), and "a CRC mismatch is treated as an aborted download". On 0.1.0–0.1.1 it
+> defaulted to Z64 with the CRC computed over the raw bitmap; on those versions pass
+> `useCompression: false`, or upgrade. The [example app](example/lib/src/printer_page.dart)'s
+> **Print image** section prints the same picture through every path so you can compare them.
 
 ### Printer info in one call
 
