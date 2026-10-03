@@ -145,8 +145,10 @@ class LibusbBindings {
     try {
       DynamicLibrary lib;
       if (Platform.isMacOS) {
-        // Frameworks/ bundle lookup, then system.
+        // The app bundle (embedded from libusb.xcframework by CocoaPods or
+        // Swift Package Manager), then system.
         lib = _tryOpen([
+          '@executable_path/../Frameworks/libusb-1.0.dylib',
           'libusb-1.0.dylib',
           '@loader_path/../Frameworks/libusb-1.0.dylib',
           '/opt/homebrew/lib/libusb-1.0.dylib',

@@ -4,12 +4,12 @@
 #
 # Supported sources:
 #   - Windows: official pre-built from libusb releases (.7z, x64+arm64 DLLs)
-#   - macOS:   copied from Homebrew's libusb if installed locally
+#   - macOS:   not here; run tool/build_libusb_macos.sh (builds the xcframework)
 #   - Android: must be built from source with NDK (see DEVELOPING.md)
 #
 # After placing binaries, regenerate CHECKSUMS:
 #   cd third_party/libusb/<VERSION> && find . -type f \
-#     \( -name "*.so" -o -name "*.dylib" -o -name "*.dll" \) \
+#     \( -name "*.so" -o -name "*.dll" \) \
 #     -exec shasum -a 256 {} \; > CHECKSUMS
 
 set -euo pipefail
@@ -18,17 +18,7 @@ VERSION="${LIBUSB_VERSION:-1.0.29}"
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DEST="${REPO_ROOT}/third_party/libusb/${VERSION}"
 
-mkdir -p "${DEST}"/{android/{armeabi-v7a,arm64-v8a,x86,x86_64},macos,windows/{x64,arm64}}
-
-# ── macOS from Homebrew ────────────────────────────────────────────────────
-BREW_LIB="/opt/homebrew/Cellar/libusb/${VERSION}/lib/libusb-1.0.dylib"
-if [[ -f "${BREW_LIB}" ]]; then
-  cp "${BREW_LIB}" "${DEST}/macos/libusb-1.0.dylib"
-  echo "✓ macOS libusb-1.0.dylib copied from Homebrew"
-else
-  echo "⚠ macOS libusb not found at ${BREW_LIB}"
-  echo "  → Install with: brew install libusb"
-fi
+mkdir -p "${DEST}"/{android/{armeabi-v7a,arm64-v8a,x86,x86_64},windows/{x64,arm64}}
 
 # ── Windows from upstream ──────────────────────────────────────────────────
 if command -v 7z >/dev/null 2>&1; then
@@ -63,7 +53,7 @@ done
 # ── Regenerate CHECKSUMS ───────────────────────────────────────────────────
 (
   cd "${DEST}"
-  find . -type f \( -name "*.so" -o -name "*.dylib" -o -name "*.dll" \) \
+  find . -type f \( -name "*.so" -o -name "*.dll" \) \
     | sort | while read -r FILE; do
     shasum -a 256 "${FILE}"
   done

@@ -12,7 +12,7 @@ import 'package:pigeon/pigeon.dart';
     kotlinOut:
         'android/src/main/kotlin/com/example/flutter_zpl_printer/UsbMessages.g.kt',
     kotlinOptions: KotlinOptions(package: 'com.example.flutter_zpl_printer'),
-    swiftOut: 'darwin/Classes/UsbMessages.g.swift',
+    swiftOut: 'darwin/flutter_zpl_printer/Sources/flutter_zpl_printer/UsbMessages.g.swift',
     swiftOptions: SwiftOptions(),
     cppHeaderOut: 'windows/usb/usb_messages.g.h',
     cppSourceOut: 'windows/usb/usb_messages.g.cpp',

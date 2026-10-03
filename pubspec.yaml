@@ -42,7 +42,9 @@ flutter:
         pluginClass: FlutterZplPrinterPlugin
       ios:
         pluginClass: FlutterZplPrinterPlugin
+        sharedDarwinSource: true
       macos:
         pluginClass: FlutterZplPrinterPlugin
+        sharedDarwinSource: true
       windows:
         pluginClass: FlutterZplPrinterPluginCApi

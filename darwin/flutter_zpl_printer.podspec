@@ -13,19 +13,24 @@ Discover, connect to, and print on Zebra ZPL label printers over Bluetooth LE, W
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'minhtri1401' => 'https://github.com/minhtri1401' }
   s.source           = { :path => '.' }
-  # Classes/Usb and Classes/UsbMessages.g.swift are symlinks into ../darwin/
-  # so the iOS and macOS plugins share one Swift codebase.
-  s.source_files = 'Classes/**/*.swift'
-  s.dependency 'Flutter'
-  s.platform = :ios, '13.0'
+
+  # Shared with Swift Package Manager (flutter_zpl_printer/Package.swift).
+  s.source_files = 'flutter_zpl_printer/Sources/flutter_zpl_printer/**/*.swift'
+  s.resource_bundles = {
+    'flutter_zpl_printer_privacy' => ['flutter_zpl_printer/Sources/flutter_zpl_printer/PrivacyInfo.xcprivacy']
+  }
+
+  s.ios.dependency 'Flutter'
+  s.osx.dependency 'FlutterMacOS'
+  s.ios.deployment_target = '13.0'
+  s.osx.deployment_target = '10.15'
+
+  # libusb for dart:ffi, embedded in the app's Contents/Frameworks/.
+  # Built by tool/build_libusb_macos.sh. CocoaPods can't vendor an xcframework
+  # of dylibs, so it takes the dylib from the slice Package.swift uses.
+  s.osx.vendored_libraries = 'flutter_zpl_printer/Frameworks/libusb.xcframework/macos-arm64_x86_64/libusb-1.0.dylib'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.0'
-
-  # If your plugin requires a privacy manifest, for example if it uses any
-  # required reason APIs, update the PrivacyInfo.xcprivacy file to describe your
-  # plugin's privacy impact, and then uncomment this line. For more information,
-  # see https://developer.apple.com/documentation/bundleresources/privacy_manifest_files
-  # s.resource_bundles = {'flutter_zpl_printer_privacy' => ['Resources/PrivacyInfo.xcprivacy']}
 end

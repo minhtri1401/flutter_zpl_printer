@@ -307,7 +307,7 @@ The current state of USB, as tested:
 
 | Platform | Result | Details |
 | :--- | :--- | :--- |
-| **macOS** | ⚪ Not tested | The code is complete (IOKit enumeration, libusb bundled through the podspec), but it hasn't been tested with a printer yet. |
+| **macOS** | ⚪ Not tested | The code is complete (IOKit enumeration; libusb bundled for CocoaPods and Swift Package Manager, Intel and Apple silicon), but it hasn't been tested with a printer yet. |
 | **Windows** | ❌ **Fails in our testing** | USB printing failed when tested with Zebra printers. The root cause is not confirmed yet; see below. Bluetooth LE and Wi-Fi work on Windows. |
 | **Android** | ⚪ Not tested | The code is in place, but the package does not ship `libusb-1.0.so`, so USB calls fail with `UsbLibLoadException` until you build and add it (see `tool/fetch_libusb.sh`). |
 | **iOS** | ➖ Not possible | iOS gives apps no USB access to printers. `UsbConnection.open()` throws `UsbUnsupportedOnPlatformException`. |

@@ -9,14 +9,12 @@ They are checked into the repository for reproducibility and offline builds.
 third_party/libusb/1.0.29/
 ├── libusb.h                         — header used by ffigen
 ├── LICENSE                          — LGPL-2.1-or-later (upstream COPYING)
-├── CHECKSUMS                        — sha256 per binary; verified in CI
+├── CHECKSUMS                        — sha256 per binary (once added)
 ├── android/
 │   ├── armeabi-v7a/libusb-1.0.so    — manual build from source + NDK
 │   ├── arm64-v8a/libusb-1.0.so
 │   ├── x86/libusb-1.0.so
 │   └── x86_64/libusb-1.0.so
-├── macos/
-│   └── libusb-1.0.dylib             — universal (x86_64 + arm64)
 └── windows/
     ├── x64/libusb-1.0.dll
     └── arm64/libusb-1.0.dll
@@ -26,10 +24,13 @@ third_party/libusb/1.0.29/
 
 Run `tool/fetch_libusb.sh` from the repo root. It:
 
-- Copies `libusb-1.0.dylib` from Homebrew if `brew install libusb` was run locally.
 - Fetches the official Windows pre-built archive from libusb upstream releases and extracts x64 + arm64 DLLs.
 - Documents the Android-from-source step (NDK required; see `DEVELOPING.md`).
 - Regenerates `CHECKSUMS`.
+
+The macOS binary lives in `darwin/flutter_zpl_printer/Frameworks/libusb.xcframework`, where
+CocoaPods and Swift Package Manager both pick it up. `tool/build_libusb_macos.sh` rebuilds it as a
+universal (x86_64 + arm64) dylib from the official release tarball, after checking its sha256.
 
 ## License
 
