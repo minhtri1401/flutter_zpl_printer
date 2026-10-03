@@ -4,7 +4,11 @@ import 'package:flutter_zpl_printer/src/connection/usb_device_address.dart';
 void main() {
   group('UsbDeviceAddress', () {
     test('encode with serial', () {
-      final a = UsbDeviceAddress(vendorId: 0x0A5F, productId: 0x0027, serialNumber: 'XX123');
+      final a = UsbDeviceAddress(
+        vendorId: 0x0A5F,
+        productId: 0x0027,
+        serialNumber: 'XX123',
+      );
       expect(a.encode(), 'usb://0A5F:0027/XX123');
     });
     test('encode without serial', () {
@@ -36,32 +40,60 @@ void main() {
       expect(a.serialNumber, 'XX_ABC-123');
     });
     test('parse wrong scheme throws', () {
-      expect(() => UsbDeviceAddress.parse('tcp://1.2.3.4:9100'), throwsFormatException);
+      expect(
+        () => UsbDeviceAddress.parse('tcp://1.2.3.4:9100'),
+        throwsFormatException,
+      );
     });
     test('parse no vid throws', () {
       expect(() => UsbDeviceAddress.parse('usb://'), throwsFormatException);
     });
     test('parse malformed throws', () {
-      expect(() => UsbDeviceAddress.parse('usb://zzz:0027'), throwsFormatException);
+      expect(
+        () => UsbDeviceAddress.parse('usb://zzz:0027'),
+        throwsFormatException,
+      );
     });
     test('isZebra for 0x0A5F', () {
-      expect(UsbDeviceAddress(vendorId: 0x0A5F, productId: 0x0027).isZebra, isTrue);
+      expect(
+        UsbDeviceAddress(vendorId: 0x0A5F, productId: 0x0027).isZebra,
+        isTrue,
+      );
     });
     test('isZebra false for non-Zebra VID', () {
-      expect(UsbDeviceAddress(vendorId: 0x1234, productId: 0x0027).isZebra, isFalse);
+      expect(
+        UsbDeviceAddress(vendorId: 0x1234, productId: 0x0027).isZebra,
+        isFalse,
+      );
     });
     test('zebraVendorId constant', () {
       expect(UsbDeviceAddress.zebraVendorId, 0x0A5F);
     });
     test('equality', () {
-      final a = UsbDeviceAddress(vendorId: 0x0A5F, productId: 0x0027, serialNumber: 'S');
-      final b = UsbDeviceAddress(vendorId: 0x0A5F, productId: 0x0027, serialNumber: 'S');
+      final a = UsbDeviceAddress(
+        vendorId: 0x0A5F,
+        productId: 0x0027,
+        serialNumber: 'S',
+      );
+      final b = UsbDeviceAddress(
+        vendorId: 0x0A5F,
+        productId: 0x0027,
+        serialNumber: 'S',
+      );
       expect(a, equals(b));
       expect(a.hashCode, b.hashCode);
     });
     test('inequality on serial', () {
-      final a = UsbDeviceAddress(vendorId: 0x0A5F, productId: 0x0027, serialNumber: 'A');
-      final b = UsbDeviceAddress(vendorId: 0x0A5F, productId: 0x0027, serialNumber: 'B');
+      final a = UsbDeviceAddress(
+        vendorId: 0x0A5F,
+        productId: 0x0027,
+        serialNumber: 'A',
+      );
+      final b = UsbDeviceAddress(
+        vendorId: 0x0A5F,
+        productId: 0x0027,
+        serialNumber: 'B',
+      );
       expect(a, isNot(equals(b)));
     });
     test('round-trip parse ∘ encode', () {

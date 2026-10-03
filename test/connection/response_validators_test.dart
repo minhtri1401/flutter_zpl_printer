@@ -36,8 +36,7 @@ void main() {
     });
 
     test('complete with nested objects', () {
-      expect(
-          validator(Uint8List.fromList('{"a":{"b":1}}'.codeUnits)), true);
+      expect(validator(Uint8List.fromList('{"a":{"b":1}}'.codeUnits)), true);
     });
 
     test('incomplete with partial object', () {
@@ -57,7 +56,10 @@ void main() {
     final validator = ResponseValidators.status();
 
     test('complete with 3 ETX bytes', () {
-      expect(validator(Uint8List.fromList([0x41, 0x03, 0x42, 0x03, 0x43, 0x03])), true);
+      expect(
+        validator(Uint8List.fromList([0x41, 0x03, 0x42, 0x03, 0x43, 0x03])),
+        true,
+      );
     });
 
     test('incomplete with 2 ETX bytes', () {

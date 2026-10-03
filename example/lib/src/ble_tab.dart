@@ -32,7 +32,8 @@ class _BleTabState extends State<BleTab> with AutomaticKeepAliveClientMixin {
       Permission.bluetoothConnect,
       Permission.location,
     ].request();
-    final bluetoothGranted = statuses[Permission.bluetoothScan]!.isGranted &&
+    final bluetoothGranted =
+        statuses[Permission.bluetoothScan]!.isGranted &&
         statuses[Permission.bluetoothConnect]!.isGranted;
     return bluetoothGranted || statuses[Permission.location]!.isGranted;
   }
@@ -49,18 +50,19 @@ class _BleTabState extends State<BleTab> with AutomaticKeepAliveClientMixin {
     });
 
     // discoverZebra filters on Zebra's advertised BLE service.
-    _scan = BleDiscovery.discoverZebra(timeout: const Duration(seconds: 15)).listen(
-      (printer) {
-        if (_printers.contains(printer)) return;
-        setState(() => _printers.add(printer));
-      },
-      onError: (Object e) {
-        if (mounted) showError(context, e);
-      },
-      onDone: () {
-        if (mounted) setState(() => _scanning = false);
-      },
-    );
+    _scan = BleDiscovery.discoverZebra(timeout: const Duration(seconds: 15))
+        .listen(
+          (printer) {
+            if (_printers.contains(printer)) return;
+            setState(() => _printers.add(printer));
+          },
+          onError: (Object e) {
+            if (mounted) showError(context, e);
+          },
+          onDone: () {
+            if (mounted) setState(() => _scanning = false);
+          },
+        );
   }
 
   Future<void> _stopScan() async {
@@ -97,7 +99,9 @@ class _BleTabState extends State<BleTab> with AutomaticKeepAliveClientMixin {
             children: [
               Expanded(
                 child: Text(
-                  _scanning ? 'Scanning for Zebra printers…' : '${_printers.length} found',
+                  _scanning
+                      ? 'Scanning for Zebra printers…'
+                      : '${_printers.length} found',
                 ),
               ),
               _scanning
@@ -122,7 +126,8 @@ class _BleTabState extends State<BleTab> with AutomaticKeepAliveClientMixin {
           child: _printers.isEmpty
               ? const EmptyHint(
                   icon: Icons.bluetooth,
-                  message: 'Turn the printer on, then tap Scan.\n'
+                  message:
+                      'Turn the printer on, then tap Scan.\n'
                       'Printers need Bluetooth 4.0 (BLE) or later.',
                 )
               : ListView(

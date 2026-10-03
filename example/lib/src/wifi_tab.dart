@@ -30,24 +30,25 @@ class _WifiTabState extends State<WifiTab> with AutomaticKeepAliveClientMixin {
     });
 
     // UDP broadcast + multicast on port 4201, merged and de-duplicated.
-    _scan = DiscoveryService.discoverAll(
-      transports: const {
-        DiscoveryTransport.udpBroadcast,
-        DiscoveryTransport.udpMulticast,
-      },
-      timeout: const Duration(seconds: 8),
-    ).listen(
-      (printer) {
-        if (_printers.contains(printer)) return;
-        setState(() => _printers.add(printer));
-      },
-      onError: (Object e) {
-        if (mounted) showError(context, e);
-      },
-      onDone: () {
-        if (mounted) setState(() => _scanning = false);
-      },
-    );
+    _scan =
+        DiscoveryService.discoverAll(
+          transports: const {
+            DiscoveryTransport.udpBroadcast,
+            DiscoveryTransport.udpMulticast,
+          },
+          timeout: const Duration(seconds: 8),
+        ).listen(
+          (printer) {
+            if (_printers.contains(printer)) return;
+            setState(() => _printers.add(printer));
+          },
+          onError: (Object e) {
+            if (mounted) showError(context, e);
+          },
+          onDone: () {
+            if (mounted) setState(() => _scanning = false);
+          },
+        );
   }
 
   Future<void> _connect(Connection connection, String title) async {
@@ -84,7 +85,9 @@ class _WifiTabState extends State<WifiTab> with AutomaticKeepAliveClientMixin {
               Expanded(
                 child: TextField(
                   controller: _ipController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   textInputAction: TextInputAction.go,
                   onSubmitted: (_) => _connectManual(),
                   decoration: const InputDecoration(
@@ -96,7 +99,10 @@ class _WifiTabState extends State<WifiTab> with AutomaticKeepAliveClientMixin {
                 ),
               ),
               const SizedBox(width: 12),
-              FilledButton(onPressed: _connectManual, child: const Text('Connect')),
+              FilledButton(
+                onPressed: _connectManual,
+                child: const Text('Connect'),
+              ),
             ],
           ),
         ),
@@ -106,7 +112,9 @@ class _WifiTabState extends State<WifiTab> with AutomaticKeepAliveClientMixin {
             children: [
               Expanded(
                 child: Text(
-                  _scanning ? 'Searching the local network…' : '${_printers.length} found',
+                  _scanning
+                      ? 'Searching the local network…'
+                      : '${_printers.length} found',
                 ),
               ),
               OutlinedButton.icon(
@@ -127,7 +135,8 @@ class _WifiTabState extends State<WifiTab> with AutomaticKeepAliveClientMixin {
           child: _printers.isEmpty
               ? const EmptyHint(
                   icon: Icons.wifi,
-                  message: 'Tap Discover to find printers on this network,\n'
+                  message:
+                      'Tap Discover to find printers on this network,\n'
                       'or type the printer\'s IP address above.',
                 )
               : ListView(
@@ -136,7 +145,8 @@ class _WifiTabState extends State<WifiTab> with AutomaticKeepAliveClientMixin {
                       PrinterTile(
                         printer: p,
                         // Equivalent to TcpConnection(p.address, p.port).
-                        onTap: () => _connect(p.createConnection(), p.friendlyName),
+                        onTap: () =>
+                            _connect(p.createConnection(), p.friendlyName),
                       ),
                   ],
                 ),

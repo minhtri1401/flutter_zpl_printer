@@ -18,22 +18,20 @@ void main() {
       final collected = <DiscoveredPrinter>[];
       final errors = <Object>[];
       final done = Completer<void>();
-      merged.listen(
-        collected.add,
-        onError: errors.add,
-        onDone: done.complete,
-      );
+      merged.listen(collected.add, onError: errors.add, onDone: done.complete);
 
       // Source A (the "TCP" one) fails immediately, as when Wi-Fi is off.
       tcpController.addError(StateError('no network interface'));
       await tcpController.close();
 
       // Source B (the "BLE" one) keeps producing results afterwards.
-      bleController.add(DiscoveredPrinter(
-        address: 'AA:BB:CC:DD:EE:FF',
-        name: 'Zebra BLE',
-        connectionType: ConnectionType.ble,
-      ));
+      bleController.add(
+        DiscoveredPrinter(
+          address: 'AA:BB:CC:DD:EE:FF',
+          name: 'Zebra BLE',
+          connectionType: ConnectionType.ble,
+        ),
+      );
       await bleController.close();
 
       await done.future.timeout(const Duration(seconds: 2));
@@ -90,8 +88,10 @@ void main() {
         ),
       ]);
 
-      final merged =
-          await DiscoveryService.mergeSources([broadcast, multicast]).toList();
+      final merged = await DiscoveryService.mergeSources([
+        broadcast,
+        multicast,
+      ]).toList();
       expect(merged, hasLength(1));
       expect(merged.single.address, '10.0.0.42');
     });

@@ -18,7 +18,11 @@ PlatformException _createConnectionError(String channelName) {
   );
 }
 
-List<Object?> wrapResponse({Object? result, PlatformException? error, bool empty = false}) {
+List<Object?> wrapResponse({
+  Object? result,
+  PlatformException? error,
+  bool empty = false,
+}) {
   if (empty) {
     return <Object?>[];
   }
@@ -118,10 +122,7 @@ class UsbDeviceRecord {
 
 /// Filter passed to [UsbHostApi.enumerate].
 class UsbEnumerateFilter {
-  UsbEnumerateFilter({
-    this.vendorId,
-    this.includeDescriptorStrings = true,
-  });
+  UsbEnumerateFilter({this.vendorId, this.includeDescriptorStrings = true});
 
   /// If non-null, return only devices with this vendor ID.
   int? vendorId;
@@ -131,10 +132,7 @@ class UsbEnumerateFilter {
   bool includeDescriptorStrings;
 
   Object encode() {
-    return <Object?>[
-      vendorId,
-      includeDescriptorStrings,
-    ];
+    return <Object?>[vendorId, includeDescriptorStrings];
   }
 
   static UsbEnumerateFilter decode(Object result) {
@@ -207,7 +205,6 @@ class UsbOpenResult {
   }
 }
 
-
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
   @override
@@ -215,13 +212,13 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
-    }    else if (value is UsbDeviceRecord) {
+    } else if (value is UsbDeviceRecord) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    }    else if (value is UsbEnumerateFilter) {
+    } else if (value is UsbEnumerateFilter) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    }    else if (value is UsbOpenResult) {
+    } else if (value is UsbOpenResult) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
     } else {
@@ -232,11 +229,11 @@ class _PigeonCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 129: 
+      case 129:
         return UsbDeviceRecord.decode(readValue(buffer)!);
-      case 130: 
+      case 130:
         return UsbEnumerateFilter.decode(readValue(buffer)!);
-      case 131: 
+      case 131:
         return UsbOpenResult.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -250,9 +247,13 @@ class UsbHostApi {
   /// Constructor for [UsbHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  UsbHostApi({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
-      : pigeonVar_binaryMessenger = binaryMessenger,
-        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+  UsbHostApi({
+    BinaryMessenger? binaryMessenger,
+    String messageChannelSuffix = '',
+  }) : pigeonVar_binaryMessenger = binaryMessenger,
+       pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty
+           ? '.$messageChannelSuffix'
+           : '';
   final BinaryMessenger? pigeonVar_binaryMessenger;
 
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
@@ -261,12 +262,14 @@ class UsbHostApi {
 
   /// Quick capability probe. False on iOS and on desktops without libusb.
   Future<bool> isSupported() async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_zpl_printer.UsbHostApi.isSupported$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
-      pigeonVar_channelName,
-      pigeonChannelCodec,
-      binaryMessenger: pigeonVar_binaryMessenger,
-    );
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.flutter_zpl_printer.UsbHostApi.isSupported$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
+          pigeonVar_channelName,
+          pigeonChannelCodec,
+          binaryMessenger: pigeonVar_binaryMessenger,
+        );
     final List<Object?>? pigeonVar_replyList =
         await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
@@ -289,12 +292,14 @@ class UsbHostApi {
 
   /// Snapshot enumeration. Returns a complete list (no streaming).
   Future<List<UsbDeviceRecord>> enumerate(UsbEnumerateFilter filter) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_zpl_printer.UsbHostApi.enumerate$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
-      pigeonVar_channelName,
-      pigeonChannelCodec,
-      binaryMessenger: pigeonVar_binaryMessenger,
-    );
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.flutter_zpl_printer.UsbHostApi.enumerate$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
+          pigeonVar_channelName,
+          pigeonChannelCodec,
+          binaryMessenger: pigeonVar_binaryMessenger,
+        );
     final List<Object?>? pigeonVar_replyList =
         await pigeonVar_channel.send(<Object?>[filter]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
@@ -311,18 +316,21 @@ class UsbHostApi {
         message: 'Host platform returned null value for non-null return value.',
       );
     } else {
-      return (pigeonVar_replyList[0] as List<Object?>?)!.cast<UsbDeviceRecord>();
+      return (pigeonVar_replyList[0] as List<Object?>?)!
+          .cast<UsbDeviceRecord>();
     }
   }
 
   /// Android: `UsbManager.hasPermission(device)`. Other: always true.
   Future<bool> hasPermission(String path) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_zpl_printer.UsbHostApi.hasPermission$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
-      pigeonVar_channelName,
-      pigeonChannelCodec,
-      binaryMessenger: pigeonVar_binaryMessenger,
-    );
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.flutter_zpl_printer.UsbHostApi.hasPermission$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
+          pigeonVar_channelName,
+          pigeonChannelCodec,
+          binaryMessenger: pigeonVar_binaryMessenger,
+        );
     final List<Object?>? pigeonVar_replyList =
         await pigeonVar_channel.send(<Object?>[path]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
@@ -346,12 +354,14 @@ class UsbHostApi {
   /// Android: triggers system dialog; resolves when user responds.
   /// Other: resolves true immediately.
   Future<bool> requestPermission(String path) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_zpl_printer.UsbHostApi.requestPermission$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
-      pigeonVar_channelName,
-      pigeonChannelCodec,
-      binaryMessenger: pigeonVar_binaryMessenger,
-    );
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.flutter_zpl_printer.UsbHostApi.requestPermission$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
+          pigeonVar_channelName,
+          pigeonChannelCodec,
+          binaryMessenger: pigeonVar_binaryMessenger,
+        );
     final List<Object?>? pigeonVar_replyList =
         await pigeonVar_channel.send(<Object?>[path]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
@@ -376,12 +386,14 @@ class UsbHostApi {
   /// On macOS/Windows, returns metadata so Dart FFI can call libusb_open.
   /// Throws on permission denied, device busy, device disappeared, etc.
   Future<UsbOpenResult> openForFfi(String path) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_zpl_printer.UsbHostApi.openForFfi$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
-      pigeonVar_channelName,
-      pigeonChannelCodec,
-      binaryMessenger: pigeonVar_binaryMessenger,
-    );
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.flutter_zpl_printer.UsbHostApi.openForFfi$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
+          pigeonVar_channelName,
+          pigeonChannelCodec,
+          binaryMessenger: pigeonVar_binaryMessenger,
+        );
     final List<Object?>? pigeonVar_replyList =
         await pigeonVar_channel.send(<Object?>[path]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
@@ -406,12 +418,14 @@ class UsbHostApi {
   /// Android: closes the retained `UsbDeviceConnection`. Other: no-op.
   /// Must be idempotent.
   Future<void> closeAfterFfi(String path) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_zpl_printer.UsbHostApi.closeAfterFfi$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
-      pigeonVar_channelName,
-      pigeonChannelCodec,
-      binaryMessenger: pigeonVar_binaryMessenger,
-    );
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.flutter_zpl_printer.UsbHostApi.closeAfterFfi$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
+          pigeonVar_channelName,
+          pigeonChannelCodec,
+          binaryMessenger: pigeonVar_binaryMessenger,
+        );
     final List<Object?>? pigeonVar_replyList =
         await pigeonVar_channel.send(<Object?>[path]) as List<Object?>?;
     if (pigeonVar_replyList == null) {

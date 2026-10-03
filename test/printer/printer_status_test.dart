@@ -257,7 +257,10 @@ void main() {
       expect(PrinterPrintMode.fromHsChar('4'), PrinterPrintMode.applicator);
       expect(PrinterPrintMode.fromHsChar('5'), PrinterPrintMode.delayedCut);
       expect(PrinterPrintMode.fromHsChar('6'), PrinterPrintMode.linerlessPeel);
-      expect(PrinterPrintMode.fromHsChar('7'), PrinterPrintMode.linerlessRewind);
+      expect(
+        PrinterPrintMode.fromHsChar('7'),
+        PrinterPrintMode.linerlessRewind,
+      );
       expect(PrinterPrintMode.fromHsChar('8'), PrinterPrintMode.partialCutter);
       expect(PrinterPrintMode.fromHsChar('9'), PrinterPrintMode.rfid);
       expect(PrinterPrintMode.fromHsChar('K'), PrinterPrintMode.kiosk);

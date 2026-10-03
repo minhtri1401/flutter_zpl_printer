@@ -21,10 +21,10 @@ enum ConnectionType {
 /// touch this extension.
 extension ConnectionTypeX on ConnectionType {
   String get displayName => switch (this) {
-        ConnectionType.tcp => 'Wi-Fi',
-        ConnectionType.ble => 'Bluetooth',
-        ConnectionType.usb => 'USB',
-      };
+    ConnectionType.tcp => 'Wi-Fi',
+    ConnectionType.ble => 'Bluetooth',
+    ConnectionType.usb => 'USB',
+  };
 
   bool get isWired => this == ConnectionType.usb;
   bool get isWireless => !isWired;

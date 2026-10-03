@@ -76,7 +76,8 @@ class BleDiscovery {
           // was dismissed) startScan will resolve silently but no
           // devices ever arrive.
           try {
-            final state = await uble.UniversalBle.getBluetoothAvailabilityState();
+            final state =
+                await uble.UniversalBle.getBluetoothAvailabilityState();
             _log('[discover] bluetoothAvailability=$state');
           } catch (e) {
             _log('[discover] bluetoothAvailability query failed: $e');
@@ -113,8 +114,10 @@ class BleDiscovery {
           _log('[discover] startScan resolved');
 
           timer = Timer(timeout, () async {
-            _log('[discover] timeout fired after ${timeout.inSeconds}s, '
-                'seen=${seen.length}');
+            _log(
+              '[discover] timeout fired after ${timeout.inSeconds}s, '
+              'seen=${seen.length}',
+            );
             await uble.UniversalBle.stopScan();
             await scanSub?.cancel();
             await controller.close();
@@ -163,7 +166,8 @@ class BleDiscovery {
   static Stream<DiscoveredPrinter> discoverZebra({
     Duration timeout = const Duration(seconds: 30),
   }) {
-    final apple = defaultTargetPlatform == TargetPlatform.iOS ||
+    final apple =
+        defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.macOS;
     final filter = (apple && !debugDisableServiceFilter)
         ? const [ZebraBluetoothConstants.zebraBleServiceUuid]

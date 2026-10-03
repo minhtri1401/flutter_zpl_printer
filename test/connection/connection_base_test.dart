@@ -11,10 +11,7 @@ void main() {
 
     setUp(() {
       conn = MockConnection(
-        config: const ConnectionConfig(
-          maxChunkSize: 4,
-          interChunkDelayMs: 0,
-        ),
+        config: const ConnectionConfig(maxChunkSize: 4, interChunkDelayMs: 0),
       );
       conn.open();
     });

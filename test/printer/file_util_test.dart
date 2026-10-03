@@ -58,7 +58,9 @@ void main() {
 
     // The format description puts a space after the asterisk.
     test('parses entries with a space after the asterisk', () async {
-      conn.queueStringResponse('\x02\r\nDIR E: \r\n* E:FORMAT1.ZPL  1234\r\n\x03');
+      conn.queueStringResponse(
+        '\x02\r\nDIR E: \r\n* E:FORMAT1.ZPL  1234\r\n\x03',
+      );
 
       final files = await FileUtil.listFiles(conn);
 

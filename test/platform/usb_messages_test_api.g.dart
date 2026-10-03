@@ -13,7 +13,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:flutter_zpl_printer/src/platform/usb_messages.g.dart';
 
-
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
   @override
@@ -21,13 +20,13 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
-    }    else if (value is UsbDeviceRecord) {
+    } else if (value is UsbDeviceRecord) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    }    else if (value is UsbEnumerateFilter) {
+    } else if (value is UsbEnumerateFilter) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    }    else if (value is UsbOpenResult) {
+    } else if (value is UsbOpenResult) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
     } else {
@@ -38,11 +37,11 @@ class _PigeonCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 129: 
+      case 129:
         return UsbDeviceRecord.decode(readValue(buffer)!);
-      case 130: 
+      case 130:
         return UsbEnumerateFilter.decode(readValue(buffer)!);
-      case 131: 
+      case 131:
         return UsbOpenResult.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);

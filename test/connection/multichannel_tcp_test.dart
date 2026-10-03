@@ -21,8 +21,14 @@ void main() {
       final conn = MultichannelTcpConnection('192.168.1.10');
       expect(conn.printConnection, isNotNull);
       expect(conn.statusConnection, isNotNull);
-      expect(conn.printConnection.connectionDescription, 'TCP:192.168.1.10:9100');
-      expect(conn.statusConnection.connectionDescription, 'TCP:192.168.1.10:9200');
+      expect(
+        conn.printConnection.connectionDescription,
+        'TCP:192.168.1.10:9100',
+      );
+      expect(
+        conn.statusConnection.connectionDescription,
+        'TCP:192.168.1.10:9200',
+      );
     });
 
     test('isConnected false when not opened', () {

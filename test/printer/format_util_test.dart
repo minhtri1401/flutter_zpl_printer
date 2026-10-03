@@ -65,11 +65,10 @@ void main() {
     });
 
     test('generates correct ZPL with variables', () async {
-      await FormatUtil.printStoredFormat(
-        conn,
-        'E:LABEL.ZPL',
-        {1: 'John Doe', 2: '123456'},
-      );
+      await FormatUtil.printStoredFormat(conn, 'E:LABEL.ZPL', {
+        1: 'John Doe',
+        2: '123456',
+      });
 
       expect(
         conn.allWrittenString,

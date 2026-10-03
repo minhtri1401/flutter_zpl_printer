@@ -70,8 +70,9 @@ class FileUtil {
     const chunkSize = 1024;
     int offset = 0;
     while (offset < data.length) {
-      final end =
-          (offset + chunkSize > data.length) ? data.length : offset + chunkSize;
+      final end = (offset + chunkSize > data.length)
+          ? data.length
+          : offset + chunkSize;
       final chunk = Uint8List.sublistView(data, offset, end);
       await connection.write(chunk);
       offset = end;
@@ -107,7 +108,9 @@ class FileUtil {
     final data = Uint8List.fromList(utf8.encode(command));
     final fileData = await connection.sendAndWaitForResponse(data);
     // Strip any SGD response wrapper (quotes)
-    if (fileData.length >= 2 && fileData.first == 0x22 && fileData.last == 0x22) {
+    if (fileData.length >= 2 &&
+        fileData.first == 0x22 &&
+        fileData.last == 0x22) {
       return Uint8List.sublistView(fileData, 1, fileData.length - 1);
     }
     return fileData;
@@ -116,10 +119,7 @@ class FileUtil {
   /// Delete a file from the printer.
   ///
   /// Sends `^XA^ID{filePath}^FS^XZ`.
-  static Future<void> deleteFile(
-    Connection connection,
-    String filePath,
-  ) async {
+  static Future<void> deleteFile(Connection connection, String filePath) async {
     ZplSanitizer.validatePath(filePath);
     final command = '^XA^ID$filePath^FS^XZ';
     await connection.write(Uint8List.fromList(utf8.encode(command)));
@@ -158,10 +158,12 @@ class FileUtil {
       if (trimmed.startsWith('*')) trimmed = trimmed.substring(1).trimLeft();
       final match = RegExp(r'^(\S+)\s+(\d+)').firstMatch(trimmed);
       if (match != null) {
-        objects.add(PrinterObject(
-          name: match.group(1)!,
-          sizeBytes: int.parse(match.group(2)!),
-        ));
+        objects.add(
+          PrinterObject(
+            name: match.group(1)!,
+            sizeBytes: int.parse(match.group(2)!),
+          ),
+        );
       }
     }
     return objects;

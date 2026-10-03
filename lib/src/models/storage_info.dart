@@ -18,6 +18,5 @@ class StorageInfo {
       totalBytes > 0 ? (totalBytes - freeBytes) / totalBytes : 0;
 
   @override
-  String toString() =>
-      'StorageInfo($drive free=$freeBytes total=$totalBytes)';
+  String toString() => 'StorageInfo($drive free=$freeBytes total=$totalBytes)';
 }

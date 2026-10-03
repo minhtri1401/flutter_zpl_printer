@@ -48,13 +48,19 @@ class _PrinterPageState extends State<PrinterPage> {
   }
 
   /// Runs [action] unless another command is in flight, showing errors as snack bars.
-  Future<void> _run(String label, Future<void> Function() action, {String? done}) async {
+  Future<void> _run(
+    String label,
+    Future<void> Function() action, {
+    String? done,
+  }) async {
     if (_busyLabel != null) return;
     setState(() => _busyLabel = label);
     try {
       await action();
       if (done != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(done)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(done)));
       }
     } catch (e) {
       if (mounted) showError(context, e);
@@ -70,22 +76,24 @@ class _PrinterPageState extends State<PrinterPage> {
 
   Future<void> _loadInfo() async {
     // Keys a printer doesn't support are skipped, not thrown.
-    final info = await _printer.getMetadata(keys: const [
-      PrinterMetadataKey.deviceProductName,
-      PrinterMetadataKey.deviceFriendlyName,
-      PrinterMetadataKey.deviceUniqueId,
-      PrinterMetadataKey.applName,
-      PrinterMetadataKey.powerPercentFull,
-      PrinterMetadataKey.ipAddr,
-    ]);
+    final info = await _printer.getMetadata(
+      keys: const [
+        PrinterMetadataKey.deviceProductName,
+        PrinterMetadataKey.deviceFriendlyName,
+        PrinterMetadataKey.deviceUniqueId,
+        PrinterMetadataKey.applName,
+        PrinterMetadataKey.powerPercentFull,
+        PrinterMetadataKey.ipAddr,
+      ],
+    );
     if (mounted) setState(() => _info = info);
   }
 
   Future<void> _print() => _run(
-        'Printing…',
-        () => _printer.printZpl(_zplController.text),
-        done: 'Sent to printer',
-      );
+    'Printing…',
+    () => _printer.printZpl(_zplController.text),
+    done: 'Sent to printer',
+  );
 
   /// Printable width in dots, as reported by the printer.
   Future<int> _printWidth() async {
@@ -96,28 +104,34 @@ class _PrinterPageState extends State<PrinterPage> {
   /// One call: `printImage` builds the label with flutter_zpl_generator
   /// (`~DG` download + `^XG` recall, uncompressed hex) and sends it.
   Future<void> _printImage() => _run('Printing image…', () async {
-        await _printer.printImage(buildTestImagePng(), targetWidth: await _printWidth());
-      }, done: 'Image sent (printImage)');
+    await _printer.printImage(
+      buildTestImagePng(),
+      targetWidth: await _printWidth(),
+    );
+  }, done: 'Image sent (printImage)');
 
   /// Full control: build a label with flutter_zpl_generator (re-exported by
   /// this package) and send it with `printLabel`.
   Future<void> _printLabelWithImage() => _run('Printing label…', () async {
-        final width = await _printWidth();
-        await _printer.printLabel(
-          ZplGenerator(
-            config: ZplConfiguration(printWidth: width, printMode: ZplPrintMode.tearOff),
-            autoLabelLengthFromFirstImage: true,
-            commands: [
-              ZplImageDownload(
-                image: buildTestImagePng(),
-                targetWidth: width,
-                ditheringAlgorithm: ZplDitheringAlgorithm.threshold,
-              ),
-              const ZplImageRecall(),
-            ],
+    final width = await _printWidth();
+    await _printer.printLabel(
+      ZplGenerator(
+        config: ZplConfiguration(
+          printWidth: width,
+          printMode: ZplPrintMode.tearOff,
+        ),
+        autoLabelLengthFromFirstImage: true,
+        commands: [
+          ZplImageDownload(
+            image: buildTestImagePng(),
+            targetWidth: width,
+            ditheringAlgorithm: ZplDitheringAlgorithm.threshold,
           ),
-        );
-      }, done: 'Label sent (printLabel)');
+          const ZplImageRecall(),
+        ],
+      ),
+    );
+  }, done: 'Label sent (printLabel)');
 
   /// Low-level `GraphicsUtil.printImage`: inline `^GFA` graphic, not yet
   /// verified on a printer. [z64] switches to Z64 compression.
@@ -136,7 +150,9 @@ class _PrinterPageState extends State<PrinterPage> {
     if (key.isEmpty) return;
     await _run('Reading $key…', () async {
       final value = await _printer.getSetting(key);
-      if (mounted) setState(() => _sgdResult = value.isEmpty ? '(empty)' : value);
+      if (mounted) {
+        setState(() => _sgdResult = value.isEmpty ? '(empty)' : value);
+      }
     });
   }
 
@@ -175,7 +191,9 @@ class _PrinterPageState extends State<PrinterPage> {
         children: [
           _StatusCard(
             status: _status,
-            onRefresh: busy ? null : () => _run('Refreshing status…', _loadStatus),
+            onRefresh: busy
+                ? null
+                : () => _run('Refreshing status…', _loadStatus),
           ),
           const SizedBox(height: 12),
           _InfoCard(
@@ -213,10 +231,10 @@ class _PrinterPageState extends State<PrinterPage> {
                     onPressed: busy
                         ? null
                         : () => _run(
-                              'Printing configuration label…',
-                              _printer.printConfigurationLabel,
-                              done: 'Configuration label sent',
-                            ),
+                            'Printing configuration label…',
+                            _printer.printConfigurationLabel,
+                            done: 'Configuration label sent',
+                          ),
                     icon: const Icon(Icons.receipt_long),
                     label: const Text('Configuration label'),
                   ),
@@ -224,10 +242,10 @@ class _PrinterPageState extends State<PrinterPage> {
                     onPressed: busy
                         ? null
                         : () => _run(
-                              'Calibrating…',
-                              _printer.calibrate,
-                              done: 'Calibration started',
-                            ),
+                            'Calibrating…',
+                            _printer.calibrate,
+                            done: 'Calibration started',
+                          ),
                     icon: const Icon(Icons.straighten),
                     label: const Text('Calibrate media'),
                   ),
@@ -263,18 +281,25 @@ class _PrinterPageState extends State<PrinterPage> {
                 ],
               ),
               const SizedBox(height: 12),
-              Text('Advanced: GraphicsUtil.printImage (^GF)', style: Theme.of(context).textTheme.labelMedium),
+              Text(
+                'Advanced: GraphicsUtil.printImage (^GF)',
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: [
                   OutlinedButton(
-                    onPressed: busy ? null : () => _printImageLowLevel(z64: false),
+                    onPressed: busy
+                        ? null
+                        : () => _printImageLowLevel(z64: false),
                     child: const Text('^GF hex'),
                   ),
                   OutlinedButton(
-                    onPressed: busy ? null : () => _printImageLowLevel(z64: true),
+                    onPressed: busy
+                        ? null
+                        : () => _printImageLowLevel(z64: true),
                     child: const Text('^GF Z64'),
                   ),
                 ],
@@ -307,7 +332,10 @@ class _PrinterPageState extends State<PrinterPage> {
               ),
               if (_sgdResult != null) ...[
                 const SizedBox(height: 12),
-                SelectableText(_sgdResult!, style: const TextStyle(fontFamily: 'monospace')),
+                SelectableText(
+                  _sgdResult!,
+                  style: const TextStyle(fontFamily: 'monospace'),
+                ),
               ],
             ],
           ),
@@ -334,7 +362,12 @@ class _Section extends StatelessWidget {
           children: [
             Row(
               children: [
-                Expanded(child: Text(title, style: Theme.of(context).textTheme.titleMedium)),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
                 ?trailing,
               ],
             ),
@@ -400,10 +433,10 @@ class _StatusCard extends StatelessWidget {
   }
 
   Widget _flag(String label, bool on) => Chip(
-        avatar: Icon(on ? Icons.warning_amber : Icons.check, size: 18),
-        label: Text(label),
-        backgroundColor: on ? Colors.orange.withValues(alpha: 0.2) : null,
-      );
+    avatar: Icon(on ? Icons.warning_amber : Icons.check, size: 18),
+    label: Text(label),
+    backgroundColor: on ? Colors.orange.withValues(alpha: 0.2) : null,
+  );
 }
 
 class _InfoCard extends StatelessWidget {
@@ -427,7 +460,8 @@ class _InfoCard extends StatelessWidget {
       MapEntry('Connection', connection),
       for (final e in _labels.entries)
         // Printers answer "?" for settings they don't have (e.g. battery on desktops).
-        if ((info[e.key] ?? '').isNotEmpty && info[e.key] != '?') MapEntry(e.value, info[e.key]!),
+        if ((info[e.key] ?? '').isNotEmpty && info[e.key] != '?')
+          MapEntry(e.value, info[e.key]!),
     ];
     return _Section(
       title: 'Printer info',
@@ -440,7 +474,10 @@ class _InfoCard extends StatelessWidget {
               children: [
                 SizedBox(
                   width: 110,
-                  child: Text(row.key, style: TextStyle(color: Theme.of(context).hintColor)),
+                  child: Text(
+                    row.key,
+                    style: TextStyle(color: Theme.of(context).hintColor),
+                  ),
                 ),
                 Expanded(child: SelectableText(row.value)),
               ],

@@ -34,10 +34,7 @@ void main() {
 
       await printer.printZpl('^XA^FO50,50^A0N,50,50^FDHello^FS^XZ');
 
-      expect(
-        conn.allWrittenString,
-        '^XA^FO50,50^A0N,50,50^FDHello^FS^XZ',
-      );
+      expect(conn.allWrittenString, '^XA^FO50,50^A0N,50,50^FDHello^FS^XZ');
     });
 
     test('getLanguage sends correct SGD GET', () async {
@@ -77,10 +74,7 @@ void main() {
 
       await printer.setSetting('media.type', 'label');
 
-      expect(
-        conn.allWrittenString,
-        '! U1 setvar "media.type" "label"\r\n',
-      );
+      expect(conn.allWrittenString, '! U1 setvar "media.type" "label"\r\n');
     });
 
     test('disconnect closes connection', () async {
@@ -129,10 +123,7 @@ void main() {
     test('reset sends SGD device.reset', () async {
       conn.queueStringResponse('"OK"');
       await printer.reset();
-      expect(
-        conn.allWrittenString,
-        '! U1 do "device.reset" ""\r\n',
-      );
+      expect(conn.allWrittenString, '! U1 do "device.reset" ""\r\n');
     });
 
     test('printDirectoryLabel sends ^WD', () async {
@@ -169,13 +160,12 @@ void main() {
     test('getMetadata sends SGD queries for expected keys', () async {
       conn.queueStringResponse('"My Printer"');
 
-      final meta = await printer.getMetadata(keys: [PrinterMetadataKey.deviceFriendlyName]);
+      final meta = await printer.getMetadata(
+        keys: [PrinterMetadataKey.deviceFriendlyName],
+      );
 
       expect(meta[PrinterMetadataKey.deviceFriendlyName], 'My Printer');
-      expect(
-        conn.allWrittenString,
-        contains('getvar "device.friendly_name"'),
-      );
+      expect(conn.allWrittenString, contains('getvar "device.friendly_name"'));
     });
   });
 
@@ -190,7 +180,10 @@ void main() {
     });
 
     test('parses line_print', () {
-      expect(PrinterLanguage.fromString('line_print'), PrinterLanguage.linePrint);
+      expect(
+        PrinterLanguage.fromString('line_print'),
+        PrinterLanguage.linePrint,
+      );
     });
 
     test('defaults to zpl for unknown', () {

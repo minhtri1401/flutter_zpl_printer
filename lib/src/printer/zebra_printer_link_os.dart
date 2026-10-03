@@ -50,13 +50,12 @@ extension ZebraPrinterLinkOs on ZebraPrinter {
     String formatPath, {
     Map<int, Uint8List> imageVars = const {},
     Map<int, String> textVars = const {},
-  }) =>
-      FormatUtil.printStoredFormatWithVarGraphics(
-        connection,
-        formatPath,
-        imageVars: imageVars,
-        textVars: textVars,
-      );
+  }) => FormatUtil.printStoredFormatWithVarGraphics(
+    connection,
+    formatPath,
+    imageVars: imageVars,
+    textVars: textVars,
+  );
 
   /// Snapshot printer configuration to ZIP bytes.
   Future<Uint8List> createProfile({void Function(String)? onProgress}) =>
@@ -71,18 +70,24 @@ extension ZebraPrinterLinkOs on ZebraPrinter {
     Uint8List profileBytes, {
     FileDeletionOption deletionOption = FileDeletionOption.none,
     void Function(String)? onProgress,
-  }) =>
-      ProfileUtil.loadProfile(connection, profileBytes,
-          deletionOption: deletionOption, onProgress: onProgress);
+  }) => ProfileUtil.loadProfile(
+    connection,
+    profileBytes,
+    deletionOption: deletionOption,
+    onProgress: onProgress,
+  );
 
   /// Alias for [loadProfile] — SDK parity.
   Future<void> loadBackup(
     Uint8List profileBytes, {
     FileDeletionOption deletionOption = FileDeletionOption.none,
     void Function(String)? onProgress,
-  }) =>
-      ProfileUtil.loadProfile(connection, profileBytes,
-          deletionOption: deletionOption, onProgress: onProgress);
+  }) => ProfileUtil.loadProfile(
+    connection,
+    profileBytes,
+    deletionOption: deletionOption,
+    onProgress: onProgress,
+  );
 
   /// Get current firmware version string.
   Future<String> getFirmwareVersion() =>
@@ -94,16 +99,21 @@ extension ZebraPrinterLinkOs on ZebraPrinter {
     Uint8List firmwareBytes, {
     required String firmwareName,
     void Function(int sent, int total)? onProgress,
-  }) =>
-      FirmwareUtil.updateFirmware(connection, firmwareBytes,
-          firmwareName: firmwareName, onProgress: onProgress);
+  }) => FirmwareUtil.updateFirmware(
+    connection,
+    firmwareBytes,
+    firmwareName: firmwareName,
+    onProgress: onProgress,
+  );
 
   /// Send firmware unconditionally (skip version check).
   /// Printer reboots after update — connection will be lost.
   Future<void> updateFirmwareUnconditionally(
     Uint8List firmwareBytes, {
     void Function(int sent, int total)? onProgress,
-  }) =>
-      FirmwareUtil.updateFirmwareUnconditionally(connection, firmwareBytes,
-          onProgress: onProgress);
+  }) => FirmwareUtil.updateFirmwareUnconditionally(
+    connection,
+    firmwareBytes,
+    onProgress: onProgress,
+  );
 }

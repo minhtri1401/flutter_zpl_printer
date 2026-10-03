@@ -20,13 +20,22 @@ void main() {
       expect(UsbLibLoadException().message, contains('libusb'));
     });
     test('UsbUnsupportedOnPlatformException', () {
-      expect(UsbUnsupportedOnPlatformException(), isA<UsbConnectionException>());
+      expect(
+        UsbUnsupportedOnPlatformException(),
+        isA<UsbConnectionException>(),
+      );
     });
     test('UsbPermissionDeniedException', () {
-      expect(UsbPermissionDeniedException('denied'), isA<UsbConnectionException>());
+      expect(
+        UsbPermissionDeniedException('denied'),
+        isA<UsbConnectionException>(),
+      );
     });
     test('UsbPermissionRequestCancelledException', () {
-      expect(UsbPermissionRequestCancelledException(), isA<UsbConnectionException>());
+      expect(
+        UsbPermissionRequestCancelledException(),
+        isA<UsbConnectionException>(),
+      );
     });
     test('UsbDeviceDisappearedException', () {
       expect(UsbDeviceDisappearedException(), isA<UsbConnectionException>());
@@ -44,14 +53,20 @@ void main() {
       expect(UsbInterfaceNotFoundException(), isA<UsbConnectionException>());
     });
     test('UsbIdentityMismatchException carries expected + actual', () {
-      final e = UsbIdentityMismatchException(expectedSerial: 'A', actualSerial: 'B');
+      final e = UsbIdentityMismatchException(
+        expectedSerial: 'A',
+        actualSerial: 'B',
+      );
       expect(e.expectedSerial, 'A');
       expect(e.actualSerial, 'B');
       expect(e.message, contains('A'));
       expect(e.message, contains('B'));
     });
     test('UsbIdentityMismatchException with custom message', () {
-      final e = UsbIdentityMismatchException(message: 'custom', expectedSerial: 'A');
+      final e = UsbIdentityMismatchException(
+        message: 'custom',
+        expectedSerial: 'A',
+      );
       expect(e.message, 'custom');
     });
     test('UsbTransferTimeoutException extends ConnectionTimeoutException', () {

@@ -16,7 +16,7 @@ abstract class Connection {
   ConnectionConfig config;
 
   Connection({ConnectionConfig? config})
-      : config = config ?? const ConnectionConfig();
+    : config = config ?? const ConnectionConfig();
 
   /// Open the connection to the printer.
   Future<void> open();

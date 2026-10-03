@@ -15,96 +15,126 @@ class LibusbBindings {
   // Function typedefs (Dart side).
   late final int Function(Pointer<Pointer<Void>>) init;
   late final void Function(Pointer<Void>) exit;
-  late final int Function(Pointer<Void>, int, Pointer<Pointer<Void>>) wrapSysDevice;
-  late final int Function(Pointer<Void>, Pointer<Pointer<Pointer<Void>>>) getDeviceList;
+  late final int Function(Pointer<Void>, int, Pointer<Pointer<Void>>)
+  wrapSysDevice;
+  late final int Function(Pointer<Void>, Pointer<Pointer<Pointer<Void>>>)
+  getDeviceList;
   late final void Function(Pointer<Pointer<Void>>, int) freeDeviceList;
-  late final int Function(Pointer<Void>, Pointer<LibusbDeviceDescriptor>) getDeviceDescriptor;
+  late final int Function(Pointer<Void>, Pointer<LibusbDeviceDescriptor>)
+  getDeviceDescriptor;
   late final int Function(Pointer<Void>, Pointer<Pointer<Void>>) open;
   late final void Function(Pointer<Void>) close;
   late final int Function(Pointer<Void>, int) claimInterface;
   late final int Function(Pointer<Void>, int) releaseInterface;
-  late final int Function(Pointer<Void>, int, Pointer<Uint8>, int, Pointer<Int32>, int)
-      bulkTransfer;
+  late final int Function(
+    Pointer<Void>,
+    int,
+    Pointer<Uint8>,
+    int,
+    Pointer<Int32>,
+    int,
+  )
+  bulkTransfer;
   late final int Function(Pointer<Void>, int) clearHalt;
   late final int Function(Pointer<Void>) resetDevice;
-  late final int Function(Pointer<Void>, int, int, Pointer<Uint8>, int) getStringDescriptorAscii;
+  late final int Function(Pointer<Void>, int, int, Pointer<Uint8>, int)
+  getStringDescriptorAscii;
   late final int Function(Pointer<Void>, int) setAutoDetachKernelDriver;
 
   LibusbBindings._(this._lib) {
     init = _lib
-        .lookup<NativeFunction<Int32 Function(Pointer<Pointer<Void>>)>>('libusb_init')
+        .lookup<NativeFunction<Int32 Function(Pointer<Pointer<Void>>)>>(
+          'libusb_init',
+        )
         .asFunction();
     exit = _lib
         .lookup<NativeFunction<Void Function(Pointer<Void>)>>('libusb_exit')
         .asFunction();
     wrapSysDevice = _lib
         .lookup<
-            NativeFunction<
-                Int32 Function(Pointer<Void>, IntPtr,
-                    Pointer<Pointer<Void>>)>>('libusb_wrap_sys_device')
+          NativeFunction<
+            Int32 Function(Pointer<Void>, IntPtr, Pointer<Pointer<Void>>)
+          >
+        >('libusb_wrap_sys_device')
         .asFunction();
     getDeviceList = _lib
         .lookup<
-            NativeFunction<
-                IntPtr Function(Pointer<Void>,
-                    Pointer<Pointer<Pointer<Void>>>)>>('libusb_get_device_list')
+          NativeFunction<
+            IntPtr Function(Pointer<Void>, Pointer<Pointer<Pointer<Void>>>)
+          >
+        >('libusb_get_device_list')
         .asFunction();
     freeDeviceList = _lib
-        .lookup<
-            NativeFunction<
-                Void Function(
-                    Pointer<Pointer<Void>>, Int32)>>('libusb_free_device_list')
+        .lookup<NativeFunction<Void Function(Pointer<Pointer<Void>>, Int32)>>(
+          'libusb_free_device_list',
+        )
         .asFunction();
     getDeviceDescriptor = _lib
         .lookup<
-            NativeFunction<
-                Int32 Function(Pointer<Void>,
-                    Pointer<LibusbDeviceDescriptor>)>>('libusb_get_device_descriptor')
+          NativeFunction<
+            Int32 Function(Pointer<Void>, Pointer<LibusbDeviceDescriptor>)
+          >
+        >('libusb_get_device_descriptor')
         .asFunction();
     open = _lib
         .lookup<
-            NativeFunction<
-                Int32 Function(Pointer<Void>,
-                    Pointer<Pointer<Void>>)>>('libusb_open')
+          NativeFunction<Int32 Function(Pointer<Void>, Pointer<Pointer<Void>>)>
+        >('libusb_open')
         .asFunction();
     close = _lib
         .lookup<NativeFunction<Void Function(Pointer<Void>)>>('libusb_close')
         .asFunction();
     claimInterface = _lib
-        .lookup<
-            NativeFunction<
-                Int32 Function(Pointer<Void>, Int32)>>('libusb_claim_interface')
+        .lookup<NativeFunction<Int32 Function(Pointer<Void>, Int32)>>(
+          'libusb_claim_interface',
+        )
         .asFunction();
     releaseInterface = _lib
-        .lookup<
-            NativeFunction<
-                Int32 Function(Pointer<Void>, Int32)>>('libusb_release_interface')
+        .lookup<NativeFunction<Int32 Function(Pointer<Void>, Int32)>>(
+          'libusb_release_interface',
+        )
         .asFunction();
     bulkTransfer = _lib
         .lookup<
-            NativeFunction<
-                Int32 Function(Pointer<Void>, UnsignedChar, Pointer<Uint8>, Int32,
-                    Pointer<Int32>, UnsignedInt)>>('libusb_bulk_transfer')
+          NativeFunction<
+            Int32 Function(
+              Pointer<Void>,
+              UnsignedChar,
+              Pointer<Uint8>,
+              Int32,
+              Pointer<Int32>,
+              UnsignedInt,
+            )
+          >
+        >('libusb_bulk_transfer')
         .asFunction();
     clearHalt = _lib
-        .lookup<
-            NativeFunction<
-                Int32 Function(Pointer<Void>, UnsignedChar)>>('libusb_clear_halt')
+        .lookup<NativeFunction<Int32 Function(Pointer<Void>, UnsignedChar)>>(
+          'libusb_clear_halt',
+        )
         .asFunction();
     resetDevice = _lib
-        .lookup<NativeFunction<Int32 Function(Pointer<Void>)>>('libusb_reset_device')
+        .lookup<NativeFunction<Int32 Function(Pointer<Void>)>>(
+          'libusb_reset_device',
+        )
         .asFunction();
     getStringDescriptorAscii = _lib
         .lookup<
-            NativeFunction<
-                Int32 Function(Pointer<Void>, Uint8, UnsignedShort, Pointer<Uint8>,
-                    Int32)>>('libusb_get_string_descriptor_ascii')
+          NativeFunction<
+            Int32 Function(
+              Pointer<Void>,
+              Uint8,
+              UnsignedShort,
+              Pointer<Uint8>,
+              Int32,
+            )
+          >
+        >('libusb_get_string_descriptor_ascii')
         .asFunction();
     setAutoDetachKernelDriver = _lib
-        .lookup<
-            NativeFunction<
-                Int32 Function(Pointer<Void>,
-                    Int32)>>('libusb_set_auto_detach_kernel_driver')
+        .lookup<NativeFunction<Int32 Function(Pointer<Void>, Int32)>>(
+          'libusb_set_auto_detach_kernel_driver',
+        )
         .asFunction();
   }
 
@@ -149,7 +179,9 @@ class LibusbBindings {
         lastError = e;
       }
     }
-    throw UsbLibLoadException('Could not load libusb from: $candidates ($lastError)');
+    throw UsbLibLoadException(
+      'Could not load libusb from: $candidates ($lastError)',
+    );
   }
 
   static LibusbBindings? _cached;
@@ -194,6 +226,10 @@ typedef DeviceDescriptorStruct = LibusbDeviceDescriptor;
 extension LibusbBindingsReadSerialExt on LibusbBindings {
   // Convenience name preserved across refactors.
   int getStringDescriptorAsciiHelper(
-          Pointer<Void> handle, int index, int langid, Pointer<Uint8> buf, int len) =>
-      getStringDescriptorAscii(handle, index, langid, buf, len);
+    Pointer<Void> handle,
+    int index,
+    int langid,
+    Pointer<Uint8> buf,
+    int len,
+  ) => getStringDescriptorAscii(handle, index, langid, buf, len);
 }

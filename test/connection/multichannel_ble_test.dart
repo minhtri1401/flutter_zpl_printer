@@ -23,7 +23,10 @@ void main() {
   group('BleConnection parameterization', () {
     test('uses default UUIDs when none provided', () {
       final conn = BleConnection('test-device');
-      expect(conn.readCharUuid, ZebraBluetoothConstants.dataFromPrinterCharUuid);
+      expect(
+        conn.readCharUuid,
+        ZebraBluetoothConstants.dataFromPrinterCharUuid,
+      );
       expect(conn.writeCharUuid, ZebraBluetoothConstants.dataToPrinterCharUuid);
       expect(conn.serviceUuid, ZebraBluetoothConstants.zebraBleDataServiceUuid);
     });
@@ -34,18 +37,27 @@ void main() {
         readCharUuid: ZebraBluetoothConstants.statusFromPrinterCharUuid,
         writeCharUuid: ZebraBluetoothConstants.statusToPrinterCharUuid,
       );
-      expect(conn.readCharUuid, ZebraBluetoothConstants.statusFromPrinterCharUuid);
-      expect(conn.writeCharUuid, ZebraBluetoothConstants.statusToPrinterCharUuid);
+      expect(
+        conn.readCharUuid,
+        ZebraBluetoothConstants.statusFromPrinterCharUuid,
+      );
+      expect(
+        conn.writeCharUuid,
+        ZebraBluetoothConstants.statusToPrinterCharUuid,
+      );
     });
 
-    test('connectionDescription includes channel suffix for non-default UUIDs', () {
-      final conn = BleConnection(
-        'test-device',
-        writeCharUuid: ZebraBluetoothConstants.statusToPrinterCharUuid,
-      );
-      // Status write UUID is 38eb4a84, so suffix is "4a84"
-      expect(conn.connectionDescription, 'BLE:test-device:4a84');
-    });
+    test(
+      'connectionDescription includes channel suffix for non-default UUIDs',
+      () {
+        final conn = BleConnection(
+          'test-device',
+          writeCharUuid: ZebraBluetoothConstants.statusToPrinterCharUuid,
+        );
+        // Status write UUID is 38eb4a84, so suffix is "4a84"
+        expect(conn.connectionDescription, 'BLE:test-device:4a84');
+      },
+    );
 
     test('connectionDescription is plain for default UUIDs', () {
       final conn = BleConnection('test-device');

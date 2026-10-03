@@ -86,8 +86,11 @@ void main() {
 
   group('ConnectionType.usb additions', () {
     test('enum declares tcp, ble, usb in that order (ordinals 0,1,2)', () {
-      expect(ConnectionType.values,
-          [ConnectionType.tcp, ConnectionType.ble, ConnectionType.usb]);
+      expect(ConnectionType.values, [
+        ConnectionType.tcp,
+        ConnectionType.ble,
+        ConnectionType.usb,
+      ]);
       expect(ConnectionType.tcp.index, 0);
       expect(ConnectionType.ble.index, 1);
       expect(ConnectionType.usb.index, 2);

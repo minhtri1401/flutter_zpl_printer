@@ -12,8 +12,8 @@ typedef ReconnectCallback = void Function(int attempt, Duration nextDelay);
 typedef ReconnectedCallback = void Function(int totalAttempts);
 
 /// Fired when all retry attempts are exhausted.
-typedef ReconnectFailedCallback = void Function(
-    int totalAttempts, Object error);
+typedef ReconnectFailedCallback =
+    void Function(int totalAttempts, Object error);
 
 /// Thrown after a successful reconnect (no auto-retry by design).
 ///
@@ -23,9 +23,10 @@ class ReconnectSuccessException extends ConnectionException {
   final int reconnectAttempts;
 
   ReconnectSuccessException(this.reconnectAttempts)
-      : super(
-            'Connection re-established after $reconnectAttempts attempt(s). '
-            'Retry your operation.');
+    : super(
+        'Connection re-established after $reconnectAttempts attempt(s). '
+        'Retry your operation.',
+      );
 }
 
 /// Wrapper that auto-reconnects on disconnect with exponential backoff.
@@ -158,8 +159,8 @@ class ReconnectableConnection extends Connection {
     }
 
     _reconnectAttempts = maxRetries;
-    final error = lastError ??
-        ConnectionException('Reconnect failed - no attempts made');
+    final error =
+        lastError ?? ConnectionException('Reconnect failed - no attempts made');
     onReconnectFailed?.call(maxRetries, error);
     throw ConnectionException(
       'Reconnect failed after $maxRetries attempts',
@@ -171,15 +172,13 @@ class ReconnectableConnection extends Connection {
   Duration _backoffDelay(int attempt) {
     final ms = initialDelay.inMilliseconds * (1 << (attempt - 1));
     return Duration(
-        milliseconds: ms > maxDelay.inMilliseconds
-            ? maxDelay.inMilliseconds
-            : ms);
+      milliseconds: ms > maxDelay.inMilliseconds ? maxDelay.inMilliseconds : ms,
+    );
   }
 
   /// Verify connection with SGD ping using semantic validator.
   Future<void> _ping() async {
-    final ping =
-        Uint8List.fromList(utf8.encode('! U1 getvar "appl.name"\r\n'));
+    final ping = Uint8List.fromList(utf8.encode('! U1 getvar "appl.name"\r\n'));
     await _inner.sendAndWaitForValidResponse(
       ping,
       validator: ResponseValidators.sgd(),

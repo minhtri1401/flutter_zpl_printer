@@ -44,14 +44,16 @@ class AlertUtil {
       );
       if (destination.isEmpty) continue;
 
-      alerts.add(PrinterAlert(
-        condition: condition,
-        destination: destination.first,
-        onSet: parts[2].trim().toUpperCase() == 'YES',
-        onClear: parts[3].trim().toUpperCase() == 'YES',
-        destinationAddress: parts[4].trim(),
-        port: int.tryParse(parts[5].trim()) ?? 0,
-      ));
+      alerts.add(
+        PrinterAlert(
+          condition: condition,
+          destination: destination.first,
+          onSet: parts[2].trim().toUpperCase() == 'YES',
+          onClear: parts[3].trim().toUpperCase() == 'YES',
+          destinationAddress: parts[4].trim(),
+          port: int.tryParse(parts[5].trim()) ?? 0,
+        ),
+      );
     }
     return alerts;
   }

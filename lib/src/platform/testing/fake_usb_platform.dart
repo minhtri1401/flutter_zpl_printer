@@ -110,7 +110,10 @@ class FakeUsbPlatform implements UsbPlatform {
   }
 
   @override
-  Future<void> clearHalt({required int handleId, required int endpoint}) async {}
+  Future<void> clearHalt({
+    required int handleId,
+    required int endpoint,
+  }) async {}
 
   @override
   Future<void> resetDevice({required int handleId}) async {}
@@ -119,8 +122,7 @@ class FakeUsbPlatform implements UsbPlatform {
   Future<String?> readStringDescriptor({
     required int handleId,
     required int index,
-  }) async =>
-      _handles[handleId]?.device.serialNumber;
+  }) async => _handles[handleId]?.device.serialNumber;
 
   @override
   Future<void> closeHandle({required int handleId}) async {

@@ -26,10 +26,7 @@ void main() {
 
         await Sgd.get('device.friendly_name', conn);
 
-        expect(
-          conn.allWrittenString,
-          '! U1 getvar "device.friendly_name"\r\n',
-        );
+        expect(conn.allWrittenString, '! U1 getvar "device.friendly_name"\r\n');
       });
 
       test('strips quotes from response', () async {
@@ -48,8 +45,7 @@ void main() {
         expect(result, '');
       });
 
-      test('collapses duplicate-reply artefacts to the first value',
-          () async {
+      test('collapses duplicate-reply artefacts to the first value', () async {
         // Observed on macOS CoreBluetooth: a single `getvar` reply
         // arrives as several concatenated `"value"` frames on the
         // notification characteristic. Sgd.get must return the
@@ -74,10 +70,7 @@ void main() {
       test('formats command correctly', () async {
         await Sgd.set('media.type', 'label', conn);
 
-        expect(
-          conn.allWrittenString,
-          '! U1 setvar "media.type" "label"\r\n',
-        );
+        expect(conn.allWrittenString, '! U1 setvar "media.type" "label"\r\n');
       });
     });
 
@@ -87,10 +80,7 @@ void main() {
 
         await Sgd.doCommand('device.reset', '', conn);
 
-        expect(
-          conn.allWrittenString,
-          '! U1 do "device.reset" ""\r\n',
-        );
+        expect(conn.allWrittenString, '! U1 do "device.reset" ""\r\n');
       });
 
       test('strips quotes from response', () async {
@@ -106,12 +96,18 @@ void main() {
       test('complete when first and last bytes are quote', () {
         final data = Uint8List.fromList([0x22, 0x41, 0x42, 0x22]);
         // Validator: first == " and last == "
-        expect(data.length >= 2 && data.first == 0x22 && data.last == 0x22, true);
+        expect(
+          data.length >= 2 && data.first == 0x22 && data.last == 0x22,
+          true,
+        );
       });
 
       test('incomplete when only first byte is quote', () {
         final data = Uint8List.fromList([0x22, 0x41, 0x42]);
-        expect(data.length >= 2 && data.first == 0x22 && data.last == 0x22, false);
+        expect(
+          data.length >= 2 && data.first == 0x22 && data.last == 0x22,
+          false,
+        );
       });
 
       test('incomplete when single byte', () {

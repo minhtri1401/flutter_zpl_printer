@@ -46,9 +46,7 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
-        body: const TabBarView(
-          children: [BleTab(), WifiTab(), UsbTab()],
-        ),
+        body: const TabBarView(children: [BleTab(), WifiTab(), UsbTab()]),
       ),
     );
   }

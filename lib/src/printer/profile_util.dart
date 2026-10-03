@@ -63,8 +63,7 @@ class ProfileUtil {
   static Future<Uint8List> createBackup(
     Connection connection, {
     void Function(String status)? onProgress,
-  }) =>
-      createProfile(connection, onProgress: onProgress);
+  }) => createProfile(connection, onProgress: onProgress);
 
   /// Restore printer configuration from ZIP profile bytes.
   ///
@@ -108,15 +107,19 @@ class ProfileUtil {
     Uint8List profileBytes, {
     FileDeletionOption deletionOption = FileDeletionOption.none,
     void Function(String status)? onProgress,
-  }) =>
-      loadProfile(connection, profileBytes,
-          deletionOption: deletionOption, onProgress: onProgress);
+  }) => loadProfile(
+    connection,
+    profileBytes,
+    deletionOption: deletionOption,
+    onProgress: onProgress,
+  );
 
   static bool _isCloneable(String name) {
     final dot = name.lastIndexOf('.');
     if (dot < 0) return false;
-    return ProfileConstants.cloneableExtensions
-        .contains(name.substring(dot + 1).toUpperCase());
+    return ProfileConstants.cloneableExtensions.contains(
+      name.substring(dot + 1).toUpperCase(),
+    );
   }
 
   static Uint8List _buildZip(
@@ -126,16 +129,14 @@ class ProfileUtil {
   ) {
     final archive = Archive();
 
-    archive.addFile(ArchiveFile.bytes(
-      'settings.json',
-      utf8.encode(jsonEncode(settings)),
-    ));
+    archive.addFile(
+      ArchiveFile.bytes('settings.json', utf8.encode(jsonEncode(settings))),
+    );
 
     final alertsJson = alerts.map((a) => a.toSgdConfig()).toList();
-    archive.addFile(ArchiveFile.bytes(
-      'alerts.json',
-      utf8.encode(jsonEncode(alertsJson)),
-    ));
+    archive.addFile(
+      ArchiveFile.bytes('alerts.json', utf8.encode(jsonEncode(alertsJson))),
+    );
 
     for (final entry in files.entries) {
       archive.addFile(ArchiveFile.bytes(entry.key, entry.value));
@@ -189,14 +190,16 @@ class ProfileUtil {
         (d) => d.sgdValue == parts[1].trim().toUpperCase(),
       );
       if (dest.isEmpty) continue;
-      alerts.add(PrinterAlert(
-        condition: condition,
-        destination: dest.first,
-        onSet: parts[2].trim().toUpperCase() == 'YES',
-        onClear: parts[3].trim().toUpperCase() == 'YES',
-        destinationAddress: parts[4].trim(),
-        port: int.tryParse(parts[5].trim()) ?? 0,
-      ));
+      alerts.add(
+        PrinterAlert(
+          condition: condition,
+          destination: dest.first,
+          onSet: parts[2].trim().toUpperCase() == 'YES',
+          onClear: parts[3].trim().toUpperCase() == 'YES',
+          destinationAddress: parts[4].trim(),
+          port: int.tryParse(parts[5].trim()) ?? 0,
+        ),
+      );
     }
     return alerts;
   }

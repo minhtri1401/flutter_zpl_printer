@@ -44,14 +44,15 @@ class FirmwareUtil {
     Connection connection,
     Uint8List firmwareBytes, {
     void Function(int sent, int total)? onProgress,
-  }) =>
-      _sendFirmware(connection, firmwareBytes, onProgress);
+  }) => _sendFirmware(connection, firmwareBytes, onProgress);
 
   static bool _isSameVersion(String currentVersion, String firmwareName) {
     // Strip file extension from firmware filename for comparison.
     // Use equality (not contains) to avoid false matches like "V7" in "V75.x".
-    final normalized =
-        firmwareName.toUpperCase().replaceAll(RegExp(r'\.[^.]+$'), '').trim();
+    final normalized = firmwareName
+        .toUpperCase()
+        .replaceAll(RegExp(r'\.[^.]+$'), '')
+        .trim();
     final current = currentVersion.toUpperCase().trim();
     return current == normalized;
   }
@@ -60,6 +61,5 @@ class FirmwareUtil {
     Connection connection,
     Uint8List data,
     void Function(int, int)? onProgress,
-  ) =>
-      FileUtil.sendFileContents(connection, data, onProgress: onProgress);
+  ) => FileUtil.sendFileContents(connection, data, onProgress: onProgress);
 }

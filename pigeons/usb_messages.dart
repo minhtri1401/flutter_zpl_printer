@@ -5,19 +5,21 @@
 
 import 'package:pigeon/pigeon.dart';
 
-@ConfigurePigeon(PigeonOptions(
-  dartOut: 'lib/src/platform/usb_messages.g.dart',
-  dartTestOut: 'test/platform/usb_messages_test_api.g.dart',
-  kotlinOut: 'android/src/main/kotlin/com/example/flutter_zpl_printer/UsbMessages.g.kt',
-  kotlinOptions: KotlinOptions(package: 'com.example.flutter_zpl_printer'),
-  swiftOut: 'darwin/Classes/UsbMessages.g.swift',
-  swiftOptions: SwiftOptions(),
-  cppHeaderOut: 'windows/usb/usb_messages.g.h',
-  cppSourceOut: 'windows/usb/usb_messages.g.cpp',
-  cppOptions: CppOptions(namespace: 'flutter_zpl_printer'),
-  copyrightHeader: 'pigeons/copyright.txt',
-))
-
+@ConfigurePigeon(
+  PigeonOptions(
+    dartOut: 'lib/src/platform/usb_messages.g.dart',
+    dartTestOut: 'test/platform/usb_messages_test_api.g.dart',
+    kotlinOut:
+        'android/src/main/kotlin/com/example/flutter_zpl_printer/UsbMessages.g.kt',
+    kotlinOptions: KotlinOptions(package: 'com.example.flutter_zpl_printer'),
+    swiftOut: 'darwin/Classes/UsbMessages.g.swift',
+    swiftOptions: SwiftOptions(),
+    cppHeaderOut: 'windows/usb/usb_messages.g.h',
+    cppSourceOut: 'windows/usb/usb_messages.g.cpp',
+    cppOptions: CppOptions(namespace: 'flutter_zpl_printer'),
+    copyrightHeader: 'pigeons/copyright.txt',
+  ),
+)
 /// One USB device returned by [UsbHostApi.enumerate].
 class UsbDeviceRecord {
   UsbDeviceRecord({
@@ -71,10 +73,7 @@ class UsbDeviceRecord {
 
 /// Filter passed to [UsbHostApi.enumerate].
 class UsbEnumerateFilter {
-  UsbEnumerateFilter({
-    this.vendorId,
-    this.includeDescriptorStrings = true,
-  });
+  UsbEnumerateFilter({this.vendorId, this.includeDescriptorStrings = true});
 
   /// If non-null, return only devices with this vendor ID.
   final int? vendorId;

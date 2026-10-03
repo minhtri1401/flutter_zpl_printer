@@ -23,9 +23,11 @@ UsbDeviceRecord _zqDevice({String serial = 'XX1', String path = '/p1'}) =>
       wMaxPacketSizeOut: 64,
     );
 
-UsbConnection _conn(FakeUsbPlatform fake, UsbDeviceAddress addr,
-        {ConnectionConfig? config}) =>
-    UsbConnection.withPlatform(addr, fake, config: config);
+UsbConnection _conn(
+  FakeUsbPlatform fake,
+  UsbDeviceAddress addr, {
+  ConnectionConfig? config,
+}) => UsbConnection.withPlatform(addr, fake, config: config);
 
 void main() {
   group('UsbConnection lifecycle', () {
@@ -49,10 +51,7 @@ void main() {
     test('identity check throws on serial mismatch', () async {
       final fake = FakeUsbPlatform()..devices.add(_zqDevice(serial: 'ACTUAL'));
       final c = _conn(fake, UsbDeviceAddress.parse('usb://0A5F:0027/EXPECTED'));
-      await expectLater(
-        c.open(),
-        throwsA(isA<UsbIdentityMismatchException>()),
-      );
+      await expectLater(c.open(), throwsA(isA<UsbIdentityMismatchException>()));
       expect(c.isConnected, isFalse);
     });
 
@@ -63,16 +62,19 @@ void main() {
       expect(c.isConnected, isTrue);
     });
 
-    test('open propagates UsbPermissionDeniedException from platform', () async {
-      final fake = FakeUsbPlatform()
-        ..devices.add(_zqDevice())
-        ..openError = UsbPermissionDeniedException('denied');
-      final c = _conn(fake, UsbDeviceAddress.parse('usb://0A5F:0027/XX1'));
-      await expectLater(
-        c.open(),
-        throwsA(isA<UsbPermissionDeniedException>()),
-      );
-    });
+    test(
+      'open propagates UsbPermissionDeniedException from platform',
+      () async {
+        final fake = FakeUsbPlatform()
+          ..devices.add(_zqDevice())
+          ..openError = UsbPermissionDeniedException('denied');
+        final c = _conn(fake, UsbDeviceAddress.parse('usb://0A5F:0027/XX1'));
+        await expectLater(
+          c.open(),
+          throwsA(isA<UsbPermissionDeniedException>()),
+        );
+      },
+    );
 
     test('unsupported platform throws', () async {
       final fake = FakeUsbPlatform()..isSupportedResult = false;
@@ -104,28 +106,30 @@ void main() {
       expect(c.isConnected, isTrue);
     });
 
-    test('requestPermission returning false throws UsbPermissionDeniedException',
-        () async {
-      final noPermDevice = UsbDeviceRecord(
-        vendorId: 0x0A5F,
-        productId: 0x0027,
-        path: '/p1',
-        hasPermission: false,
-        serialNumber: null,
-        interfaceNumber: 0,
-        bulkInEndpoint: 0x81,
-        bulkOutEndpoint: 0x01,
-        wMaxPacketSizeOut: 64,
-      );
-      final fake = FakeUsbPlatform()
-        ..devices.add(noPermDevice)
-        ..permissionGrantResult = false;
-      final c = _conn(fake, UsbDeviceAddress.parse('usb://0A5F:0027'));
-      await expectLater(
-        c.open(),
-        throwsA(isA<UsbPermissionDeniedException>()),
-      );
-    });
+    test(
+      'requestPermission returning false throws UsbPermissionDeniedException',
+      () async {
+        final noPermDevice = UsbDeviceRecord(
+          vendorId: 0x0A5F,
+          productId: 0x0027,
+          path: '/p1',
+          hasPermission: false,
+          serialNumber: null,
+          interfaceNumber: 0,
+          bulkInEndpoint: 0x81,
+          bulkOutEndpoint: 0x01,
+          wMaxPacketSizeOut: 64,
+        );
+        final fake = FakeUsbPlatform()
+          ..devices.add(noPermDevice)
+          ..permissionGrantResult = false;
+        final c = _conn(fake, UsbDeviceAddress.parse('usb://0A5F:0027'));
+        await expectLater(
+          c.open(),
+          throwsA(isA<UsbPermissionDeniedException>()),
+        );
+      },
+    );
   });
 
   group('UsbConnection I/O', () {
@@ -214,7 +218,10 @@ void main() {
       final c = _conn(
         fake,
         UsbDeviceAddress.parse('usb://0A5F:0027/XX1'),
-        config: const ConnectionConfig(maxTimeoutForRead: 500, timeToWaitForMoreData: 100),
+        config: const ConnectionConfig(
+          maxTimeoutForRead: 500,
+          timeToWaitForMoreData: 100,
+        ),
       );
       await c.open();
       fake.queueRead(1, Uint8List.fromList('"ZQ620"'.codeUnits));
@@ -226,7 +233,10 @@ void main() {
       final c = _conn(
         fake,
         UsbDeviceAddress.parse('usb://0A5F:0027/XX1'),
-        config: const ConnectionConfig(maxTimeoutForRead: 500, timeToWaitForMoreData: 100),
+        config: const ConnectionConfig(
+          maxTimeoutForRead: 500,
+          timeToWaitForMoreData: 100,
+        ),
       );
       await c.open();
       fake.queueRead(1, Uint8List.fromList('"V85.'.codeUnits));
@@ -234,15 +244,21 @@ void main() {
       expect(await Sgd.get('appl.name', c), 'V85.20.24');
     });
 
-    test('open picks the printer whose serial matches when two share VID:PID',
-        () async {
-      final fake = FakeUsbPlatform()
-        ..devices.add(_zqDevice(serial: 'SERIAL_A', path: '/p1'))
-        ..devices.add(_zqDevice(serial: 'SERIAL_B', path: '/p2'));
-      final c = _conn(fake, UsbDeviceAddress.parse('usb://0A5F:0027/SERIAL_B'));
-      await c.open(); // previously opened SERIAL_A and threw identity mismatch
-      expect(c.isConnected, isTrue);
-    });
+    test(
+      'open picks the printer whose serial matches when two share VID:PID',
+      () async {
+        final fake = FakeUsbPlatform()
+          ..devices.add(_zqDevice(serial: 'SERIAL_A', path: '/p1'))
+          ..devices.add(_zqDevice(serial: 'SERIAL_B', path: '/p2'));
+        final c = _conn(
+          fake,
+          UsbDeviceAddress.parse('usb://0A5F:0027/SERIAL_B'),
+        );
+        await c
+            .open(); // previously opened SERIAL_A and threw identity mismatch
+        expect(c.isConnected, isTrue);
+      },
+    );
 
     test('connectionDescription formats VID:PID:SERIAL', () {
       final fake = FakeUsbPlatform();
@@ -274,7 +290,11 @@ class _StallOnceFake extends FakeUsbPlatform {
     if (writeCalls == 1) {
       throw UsbTransferStalledException();
     }
-    return super.writeBytes(handleId: handleId, data: data, timeoutMs: timeoutMs);
+    return super.writeBytes(
+      handleId: handleId,
+      data: data,
+      timeoutMs: timeoutMs,
+    );
   }
 
   @override

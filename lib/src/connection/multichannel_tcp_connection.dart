@@ -36,8 +36,7 @@ class MultichannelTcpConnection extends Connection {
       _printConnection.isConnected && _statusConnection.isConnected;
 
   @override
-  String get connectionDescription =>
-      'TCP_MULTI:$host:$printPort:$statusPort';
+  String get connectionDescription => 'TCP_MULTI:$host:$printPort:$statusPort';
 
   @override
   Future<void> open() async {
@@ -83,13 +82,12 @@ class MultichannelTcpConnection extends Connection {
     int? initialTimeout,
     int? readTimeout,
     String? endOfResponseMarker,
-  }) =>
-      _statusConnection.sendAndWaitForResponse(
-        data,
-        initialTimeout: initialTimeout,
-        readTimeout: readTimeout,
-        endOfResponseMarker: endOfResponseMarker,
-      );
+  }) => _statusConnection.sendAndWaitForResponse(
+    data,
+    initialTimeout: initialTimeout,
+    readTimeout: readTimeout,
+    endOfResponseMarker: endOfResponseMarker,
+  );
 
   /// Send command on status channel and wait for validated response.
   @override
@@ -98,11 +96,10 @@ class MultichannelTcpConnection extends Connection {
     int? initialTimeout,
     int? readTimeout,
     required ResponseValidator validator,
-  }) =>
-      _statusConnection.sendAndWaitForValidResponse(
-        data,
-        initialTimeout: initialTimeout,
-        readTimeout: readTimeout,
-        validator: validator,
-      );
+  }) => _statusConnection.sendAndWaitForValidResponse(
+    data,
+    initialTimeout: initialTimeout,
+    readTimeout: readTimeout,
+    validator: validator,
+  );
 }

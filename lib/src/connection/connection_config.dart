@@ -59,7 +59,8 @@ class ConnectionConfig {
   }) {
     return ConnectionConfig(
       maxTimeoutForRead: maxTimeoutForRead ?? this.maxTimeoutForRead,
-      timeToWaitForMoreData: timeToWaitForMoreData ?? this.timeToWaitForMoreData,
+      timeToWaitForMoreData:
+          timeToWaitForMoreData ?? this.timeToWaitForMoreData,
       maxChunkSize: maxChunkSize ?? this.maxChunkSize,
       interChunkDelayMs: interChunkDelayMs ?? this.interChunkDelayMs,
       readBufferSize: readBufferSize ?? this.readBufferSize,

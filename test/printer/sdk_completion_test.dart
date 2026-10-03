@@ -25,10 +25,7 @@ void main() {
     test('sends SGD alerts.configured set with empty value', () async {
       await AlertUtil.removeAllAlerts(conn);
 
-      expect(
-        conn.allWrittenString,
-        '! U1 setvar "alerts.configured" ""\r\n',
-      );
+      expect(conn.allWrittenString, '! U1 setvar "alerts.configured" ""\r\n');
     });
 
     test('can be called after configuring alerts', () async {
@@ -46,10 +43,7 @@ void main() {
 
       await AlertUtil.removeAllAlerts(conn);
 
-      expect(
-        conn.allWrittenString,
-        '! U1 setvar "alerts.configured" ""\r\n',
-      );
+      expect(conn.allWrittenString, '! U1 setvar "alerts.configured" ""\r\n');
     });
   });
 
@@ -70,10 +64,10 @@ void main() {
       conn.queueStringResponse('* ');
       conn.queueStringResponse('* ');
 
-      final names = await FileUtil.retrieveFileNamesByExtension(
-        conn,
-        ['ZPL', 'GRF'],
-      );
+      final names = await FileUtil.retrieveFileNamesByExtension(conn, [
+        'ZPL',
+        'GRF',
+      ]);
 
       expect(names, isA<List<String>>());
     });
@@ -186,11 +180,7 @@ void main() {
       await FormatUtil.printStoredFormatWithVarGraphics(
         conn,
         'E:FORM.ZPL',
-        textVars: {
-          1: 'First',
-          2: 'Second',
-          3: 'Third',
-        },
+        textVars: {1: 'First', 2: 'Second', 3: 'Third'},
       );
 
       final written = conn.allWrittenString;
@@ -207,10 +197,7 @@ void main() {
       final version = await FirmwareUtil.getCurrentFirmwareVersion(conn);
 
       expect(version, 'V75.19.10Z');
-      expect(
-        conn.allWrittenString,
-        '! U1 getvar "appl.name"\r\n',
-      );
+      expect(conn.allWrittenString, '! U1 getvar "appl.name"\r\n');
     });
 
     test('returns version without quotes', () async {
@@ -283,10 +270,7 @@ void main() {
     test('sends firmware without version check', () async {
       final firmwareBytes = Uint8List.fromList([0x00, 0x01, 0x02, 0x03]);
 
-      await FirmwareUtil.updateFirmwareUnconditionally(
-        conn,
-        firmwareBytes,
-      );
+      await FirmwareUtil.updateFirmwareUnconditionally(conn, firmwareBytes);
 
       // Should have written firmware bytes
       expect(conn.allWrittenBytes, isNotEmpty);
@@ -294,7 +278,9 @@ void main() {
 
     test('supports progress callback', () async {
       final progressUpdates = <(int, int)>[];
-      final firmwareBytes = Uint8List.fromList(List<int>.generate(2048, (i) => i % 256));
+      final firmwareBytes = Uint8List.fromList(
+        List<int>.generate(2048, (i) => i % 256),
+      );
 
       await FirmwareUtil.updateFirmwareUnconditionally(
         conn,
@@ -376,18 +362,16 @@ void main() {
     test('loadProfile applies settings and uploads files', () async {
       // Build a test ZIP profile
       final archive = Archive();
-      archive.addFile(ArchiveFile.bytes(
-        'settings.json',
-        utf8.encode('{"media.type": "label"}'),
-      ));
-      archive.addFile(ArchiveFile.bytes(
-        'alerts.json',
-        utf8.encode('[]'),
-      ));
-      archive.addFile(ArchiveFile.bytes(
-        'E:LABEL.ZPL',
-        utf8.encode('^XA^FDTest^FS^XZ'),
-      ));
+      archive.addFile(
+        ArchiveFile.bytes(
+          'settings.json',
+          utf8.encode('{"media.type": "label"}'),
+        ),
+      );
+      archive.addFile(ArchiveFile.bytes('alerts.json', utf8.encode('[]')));
+      archive.addFile(
+        ArchiveFile.bytes('E:LABEL.ZPL', utf8.encode('^XA^FDTest^FS^XZ')),
+      );
 
       final profileBytes = Uint8List.fromList(ZipEncoder().encode(archive));
 
@@ -404,14 +388,8 @@ void main() {
 
     test('loadProfile with FileDeletionOption.cloneable', () async {
       final archive = Archive();
-      archive.addFile(ArchiveFile.bytes(
-        'settings.json',
-        utf8.encode('{}'),
-      ));
-      archive.addFile(ArchiveFile.bytes(
-        'alerts.json',
-        utf8.encode('[]'),
-      ));
+      archive.addFile(ArchiveFile.bytes('settings.json', utf8.encode('{}')));
+      archive.addFile(ArchiveFile.bytes('alerts.json', utf8.encode('[]')));
 
       final profileBytes = Uint8List.fromList(ZipEncoder().encode(archive));
 
@@ -449,14 +427,8 @@ void main() {
 
     test('loadBackup alias delegates to loadProfile', () async {
       final archive = Archive();
-      archive.addFile(ArchiveFile.bytes(
-        'settings.json',
-        utf8.encode('{}'),
-      ));
-      archive.addFile(ArchiveFile.bytes(
-        'alerts.json',
-        utf8.encode('[]'),
-      ));
+      archive.addFile(ArchiveFile.bytes('settings.json', utf8.encode('{}')));
+      archive.addFile(ArchiveFile.bytes('alerts.json', utf8.encode('[]')));
 
       final profileBytes = Uint8List.fromList(ZipEncoder().encode(archive));
 
@@ -494,14 +466,10 @@ void main() {
       final progressCalls = <String>[];
 
       final archive = Archive();
-      archive.addFile(ArchiveFile.bytes(
-        'settings.json',
-        utf8.encode('{"key": "value"}'),
-      ));
-      archive.addFile(ArchiveFile.bytes(
-        'alerts.json',
-        utf8.encode('[]'),
-      ));
+      archive.addFile(
+        ArchiveFile.bytes('settings.json', utf8.encode('{"key": "value"}')),
+      );
+      archive.addFile(ArchiveFile.bytes('alerts.json', utf8.encode('[]')));
 
       final profileBytes = Uint8List.fromList(ZipEncoder().encode(archive));
 
@@ -540,10 +508,7 @@ void main() {
       conn.writtenData.clear();
       await AlertUtil.removeAllAlerts(conn);
 
-      expect(
-        conn.allWrittenString,
-        '! U1 setvar "alerts.configured" ""\r\n',
-      );
+      expect(conn.allWrittenString, '! U1 setvar "alerts.configured" ""\r\n');
     });
   });
 }

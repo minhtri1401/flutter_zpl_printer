@@ -63,7 +63,11 @@ class UsbConnection extends Connection {
     );
     final records = await _platform.enumerate(filter);
     final matches = records
-        .where((r) => r.vendorId == address.vendorId && r.productId == address.productId)
+        .where(
+          (r) =>
+              r.vendorId == address.vendorId &&
+              r.productId == address.productId,
+        )
         .toList();
     if (matches.isEmpty) return null;
     final serial = address.serialNumber;

@@ -40,8 +40,7 @@ class FontUtil {
     String extension,
   ) async {
     ZplSanitizer.validatePath(printerPath);
-    final header =
-        '~DY$printerPath,$format,$extension,${fontData.length},0,:';
+    final header = '~DY$printerPath,$format,$extension,${fontData.length},0,:';
     final headerBytes = utf8.encode(header);
     final payload = Uint8List(headerBytes.length + fontData.length);
     payload.setAll(0, headerBytes);

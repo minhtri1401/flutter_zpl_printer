@@ -110,7 +110,11 @@ class EmptyHint extends StatelessWidget {
           children: [
             Icon(icon, size: 48, color: color),
             const SizedBox(height: 12),
-            Text(message, textAlign: TextAlign.center, style: TextStyle(color: color)),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: color),
+            ),
           ],
         ),
       ),
@@ -138,14 +142,18 @@ class NoticeCard extends StatelessWidget {
           children: [
             Icon(
               warning ? Icons.warning_amber : Icons.info_outline,
-              color: warning ? scheme.onErrorContainer : scheme.onSecondaryContainer,
+              color: warning
+                  ? scheme.onErrorContainer
+                  : scheme.onSecondaryContainer,
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 message,
                 style: TextStyle(
-                  color: warning ? scheme.onErrorContainer : scheme.onSecondaryContainer,
+                  color: warning
+                      ? scheme.onErrorContainer
+                      : scheme.onSecondaryContainer,
                 ),
               ),
             ),

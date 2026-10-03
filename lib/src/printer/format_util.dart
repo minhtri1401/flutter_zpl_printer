@@ -42,10 +42,9 @@ class FormatUtil {
     for (final match in pattern.allMatches(formatZpl)) {
       final number = int.parse(match.group(1)!);
       if (seen.add(number)) {
-        fields.add(FieldDescription(
-          fieldNumber: number,
-          fieldName: match.group(2),
-        ));
+        fields.add(
+          FieldDescription(fieldNumber: number, fieldName: match.group(2)),
+        );
       }
     }
 
@@ -129,7 +128,11 @@ class FormatUtil {
 
     try {
       await _printFormatWithImageVars(
-          connection, formatPath, mergedVars, imageVars.keys.toSet());
+        connection,
+        formatPath,
+        mergedVars,
+        imageVars.keys.toSet(),
+      );
     } finally {
       for (final path in tempFiles) {
         try {
@@ -149,8 +152,7 @@ class FormatUtil {
     zpl = zpl.replaceAll(RegExp(r'\^DF[^\^]*'), '');
 
     for (final entry in vars.entries) {
-      final fnPattern =
-          RegExp(r'\^FN' + entry.key.toString() + r'(?=[^\d]|$)');
+      final fnPattern = RegExp(r'\^FN' + entry.key.toString() + r'(?=[^\d]|$)');
       if (imageFieldNumbers.contains(entry.key)) {
         zpl = zpl.replaceAll(fnPattern, '^XG${entry.value},1,1');
       } else {

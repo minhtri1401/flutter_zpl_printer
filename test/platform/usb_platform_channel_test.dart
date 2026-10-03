@@ -12,14 +12,18 @@ void main() {
   group('throwAsTyped — PlatformException → typed exception', () {
     test('USB_UNSUPPORTED → UsbUnsupportedOnPlatformException', () {
       expect(
-        () => throwAsTyped(PlatformException(code: 'USB_UNSUPPORTED', message: 'iOS')),
+        () => throwAsTyped(
+          PlatformException(code: 'USB_UNSUPPORTED', message: 'iOS'),
+        ),
         throwsA(isA<UsbUnsupportedOnPlatformException>()),
       );
     });
 
     test('USB_LIB_LOAD_FAILED → UsbLibLoadException', () {
       expect(
-        () => throwAsTyped(PlatformException(code: 'USB_LIB_LOAD_FAILED', message: 'no .so')),
+        () => throwAsTyped(
+          PlatformException(code: 'USB_LIB_LOAD_FAILED', message: 'no .so'),
+        ),
         throwsA(isA<UsbLibLoadException>()),
       );
     });
@@ -31,12 +35,16 @@ void main() {
       );
     });
 
-    test('USB_PERMISSION_CANCELLED → UsbPermissionRequestCancelledException', () {
-      expect(
-        () => throwAsTyped(PlatformException(code: 'USB_PERMISSION_CANCELLED')),
-        throwsA(isA<UsbPermissionRequestCancelledException>()),
-      );
-    });
+    test(
+      'USB_PERMISSION_CANCELLED → UsbPermissionRequestCancelledException',
+      () {
+        expect(
+          () =>
+              throwAsTyped(PlatformException(code: 'USB_PERMISSION_CANCELLED')),
+          throwsA(isA<UsbPermissionRequestCancelledException>()),
+        );
+      },
+    );
 
     test('USB_DEVICE_NOT_FOUND → UsbDeviceDisappearedException', () {
       expect(
@@ -54,7 +62,9 @@ void main() {
 
     test('USB_DEVICE_BUSY → UsbDeviceBusyException (no remediation)', () {
       try {
-        throwAsTyped(PlatformException(code: 'USB_DEVICE_BUSY', message: 'busy'));
+        throwAsTyped(
+          PlatformException(code: 'USB_DEVICE_BUSY', message: 'busy'),
+        );
       } on UsbDeviceBusyException catch (e) {
         expect(e.remediation, isNull);
         return;
@@ -62,16 +72,24 @@ void main() {
       fail('should have thrown UsbDeviceBusyException');
     });
 
-    test('USB_DRIVER_BOUND_TO_SPOOLER → UsbDeviceBusyException with remediation', () {
-      try {
-        throwAsTyped(PlatformException(code: 'USB_DRIVER_BOUND_TO_SPOOLER', message: 'bound'));
-      } on UsbDeviceBusyException catch (e) {
-        expect(e.remediation, isNotNull);
-        expect(e.remediation, contains('WinUSB'));
-        return;
-      }
-      fail('should have thrown UsbDeviceBusyException');
-    });
+    test(
+      'USB_DRIVER_BOUND_TO_SPOOLER → UsbDeviceBusyException with remediation',
+      () {
+        try {
+          throwAsTyped(
+            PlatformException(
+              code: 'USB_DRIVER_BOUND_TO_SPOOLER',
+              message: 'bound',
+            ),
+          );
+        } on UsbDeviceBusyException catch (e) {
+          expect(e.remediation, isNotNull);
+          expect(e.remediation, contains('WinUSB'));
+          return;
+        }
+        fail('should have thrown UsbDeviceBusyException');
+      },
+    );
 
     test('USB_INTERFACE_NOT_FOUND → UsbInterfaceNotFoundException', () {
       expect(
@@ -82,10 +100,12 @@ void main() {
 
     test('USB_IDENTITY_MISMATCH carries expected/actual from details', () {
       try {
-        throwAsTyped(PlatformException(
-          code: 'USB_IDENTITY_MISMATCH',
-          details: {'expected': 'A', 'actual': 'B'},
-        ));
+        throwAsTyped(
+          PlatformException(
+            code: 'USB_IDENTITY_MISMATCH',
+            details: {'expected': 'A', 'actual': 'B'},
+          ),
+        );
       } on UsbIdentityMismatchException catch (e) {
         expect(e.expectedSerial, 'A');
         expect(e.actualSerial, 'B');

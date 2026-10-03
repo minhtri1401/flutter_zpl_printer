@@ -25,7 +25,7 @@ class UsbPlatformComposite implements UsbPlatform {
   final Map<int, _OpenMeta> _openMeta = {};
 
   UsbPlatformComposite({UsbPlatformChannel? channel})
-      : _channel = channel ?? UsbPlatformChannel();
+    : _channel = channel ?? UsbPlatformChannel();
 
   UsbPlatformFfi _ensureFfi() {
     return _ffi ??= UsbPlatformFfi.load();
@@ -50,7 +50,8 @@ class UsbPlatformComposite implements UsbPlatform {
   Future<bool> hasPermission(String path) => _channel.hasPermission(path);
 
   @override
-  Future<bool> requestPermission(String path) => _channel.requestPermission(path);
+  Future<bool> requestPermission(String path) =>
+      _channel.requestPermission(path);
 
   @override
   Future<UsbOpenResult> openForFfi(String path) async {
@@ -97,7 +98,9 @@ class UsbPlatformComposite implements UsbPlatform {
     required int timeoutMs,
   }) {
     final meta = _openMeta[handleId];
-    if (meta == null) throw ConnectionClosedException('Unknown handle $handleId');
+    if (meta == null) {
+      throw ConnectionClosedException('Unknown handle $handleId');
+    }
     return _ensureFfi().writeBytes(
       handleId: handleId,
       endpoint: meta.bulkOut,
@@ -113,7 +116,9 @@ class UsbPlatformComposite implements UsbPlatform {
     required int timeoutMs,
   }) {
     final meta = _openMeta[handleId];
-    if (meta == null) throw ConnectionClosedException('Unknown handle $handleId');
+    if (meta == null) {
+      throw ConnectionClosedException('Unknown handle $handleId');
+    }
     return _ensureFfi().readBytes(
       handleId: handleId,
       endpoint: meta.bulkIn,
@@ -134,8 +139,7 @@ class UsbPlatformComposite implements UsbPlatform {
   Future<String?> readStringDescriptor({
     required int handleId,
     required int index,
-  }) =>
-      _ensureFfi().readStringDescriptor(handleId: handleId, index: index);
+  }) => _ensureFfi().readStringDescriptor(handleId: handleId, index: index);
 
   @override
   Future<void> closeHandle({required int handleId}) async {

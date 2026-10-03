@@ -14,9 +14,21 @@ class NetworkDiscovery {
   static const int _discoveryPort = 4201;
 
   /// Advanced discovery packet from SDK's `BroadcastA`.
-  static final Uint8List _advancedDiscoveryPacket = Uint8List.fromList(
-    [0x2E, 0x2C, 0x3A, 0x01, 0x00, 0x00, 0x00, 0x01, 0xA4, 0xED, 0x00, 0x00, 0x00],
-  );
+  static final Uint8List _advancedDiscoveryPacket = Uint8List.fromList([
+    0x2E,
+    0x2C,
+    0x3A,
+    0x01,
+    0x00,
+    0x00,
+    0x00,
+    0x01,
+    0xA4,
+    0xED,
+    0x00,
+    0x00,
+    0x00,
+  ]);
 
   /// Discover Zebra printers on the local network via UDP broadcast.
   ///
@@ -35,9 +47,11 @@ class NetworkDiscovery {
           socket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
           socket!.broadcastEnabled = true;
           // ignore: avoid_print
-          print('[network-discovery] broadcast bound on '
-              '${socket!.address.address}:${socket!.port}, '
-              'sending to 255.255.255.255:$_discoveryPort');
+          print(
+            '[network-discovery] broadcast bound on '
+            '${socket!.address.address}:${socket!.port}, '
+            'sending to 255.255.255.255:$_discoveryPort',
+          );
 
           final sent = socket!.send(
             _advancedDiscoveryPacket,
@@ -45,8 +59,10 @@ class NetworkDiscovery {
             _discoveryPort,
           );
           // ignore: avoid_print
-          print('[network-discovery] broadcast send returned $sent bytes '
-              '(packet size ${_advancedDiscoveryPacket.length})');
+          print(
+            '[network-discovery] broadcast send returned $sent bytes '
+            '(packet size ${_advancedDiscoveryPacket.length})',
+          );
 
           socket!.listen((event) {
             if (event == RawSocketEvent.read) {
@@ -55,8 +71,10 @@ class NetworkDiscovery {
 
               final address = datagram.address.address;
               // ignore: avoid_print
-              print('[network-discovery] broadcast reply from $address '
-                  '(${datagram.data.length} bytes)');
+              print(
+                '[network-discovery] broadcast reply from $address '
+                '(${datagram.data.length} bytes)',
+              );
               if (seen.contains(address)) return;
               seen.add(address);
 
@@ -70,8 +88,10 @@ class NetworkDiscovery {
           // Auto-stop after timeout
           timer = Timer(timeout, () {
             // ignore: avoid_print
-            print('[network-discovery] broadcast timeout after '
-                '${timeout.inSeconds}s, replies received: ${seen.length}');
+            print(
+              '[network-discovery] broadcast timeout after '
+              '${timeout.inSeconds}s, replies received: ${seen.length}',
+            );
             socket?.close();
             controller.close();
           });
@@ -103,7 +123,10 @@ class NetworkDiscovery {
   }) {
     if (!RegExp(r'^\d{1,3}\.\d{1,3}\.\d{1,3}$').hasMatch(subnetPrefix)) {
       throw ArgumentError.value(
-          subnetPrefix, 'subnetPrefix', 'Expected format: X.Y.Z');
+        subnetPrefix,
+        'subnetPrefix',
+        'Expected format: X.Y.Z',
+      );
     }
 
     late StreamController<DiscoveredPrinter> controller;
@@ -171,9 +194,11 @@ class NetworkDiscovery {
         try {
           socket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
           // ignore: avoid_print
-          print('[network-discovery] multicast bound on '
-              '${socket!.address.address}:${socket!.port}, '
-              'target $multicastGroup:$_discoveryPort');
+          print(
+            '[network-discovery] multicast bound on '
+            '${socket!.address.address}:${socket!.port}, '
+            'target $multicastGroup:$_discoveryPort',
+          );
 
           try {
             socket!.joinMulticast(InternetAddress(multicastGroup));
@@ -182,8 +207,10 @@ class NetworkDiscovery {
           } catch (e) {
             // joinMulticast may fail on iOS; continue with send-only
             // ignore: avoid_print
-            print('[network-discovery] multicast join failed '
-                '(continuing send-only): $e');
+            print(
+              '[network-discovery] multicast join failed '
+              '(continuing send-only): $e',
+            );
           }
 
           if (ttl > 0) socket!.multicastHops = ttl;
@@ -202,8 +229,10 @@ class NetworkDiscovery {
               if (datagram == null) return;
               final address = datagram.address.address;
               // ignore: avoid_print
-              print('[network-discovery] multicast reply from $address '
-                  '(${datagram.data.length} bytes)');
+              print(
+                '[network-discovery] multicast reply from $address '
+                '(${datagram.data.length} bytes)',
+              );
               if (seen.contains(address)) return;
               seen.add(address);
               final printer = _parseResponse(datagram);
@@ -213,8 +242,10 @@ class NetworkDiscovery {
 
           timer = Timer(timeout, () {
             // ignore: avoid_print
-            print('[network-discovery] multicast timeout after '
-                '${timeout.inSeconds}s, replies received: ${seen.length}');
+            print(
+              '[network-discovery] multicast timeout after '
+              '${timeout.inSeconds}s, replies received: ${seen.length}',
+            );
             socket?.close();
             controller.close();
           });
@@ -246,7 +277,10 @@ class NetworkDiscovery {
   }) {
     if (!RegExp(r'^\d{1,3}\.\d{1,3}\.\d{1,3}$').hasMatch(subnetPrefix)) {
       throw ArgumentError.value(
-          subnetPrefix, 'subnetPrefix', 'Expected format: X.Y.Z');
+        subnetPrefix,
+        'subnetPrefix',
+        'Expected format: X.Y.Z',
+      );
     }
 
     late StreamController<DiscoveredPrinter> controller;
@@ -267,15 +301,19 @@ class NetworkDiscovery {
 
             for (int ip = i; ip <= batchEnd; ip++) {
               final host = '$subnetPrefix.$ip';
-              futures.add(_probeHost(host, probeTimeout).then((found) {
-                if (found && !cancelled && !controller.isClosed) {
-                  controller.add(DiscoveredPrinter(
-                    address: host,
-                    connectionType: ConnectionType.tcp,
-                    port: 9100,
-                  ));
-                }
-              }));
+              futures.add(
+                _probeHost(host, probeTimeout).then((found) {
+                  if (found && !cancelled && !controller.isClosed) {
+                    controller.add(
+                      DiscoveredPrinter(
+                        address: host,
+                        connectionType: ConnectionType.tcp,
+                        port: 9100,
+                      ),
+                    );
+                  }
+                }),
+              );
             }
             await Future.wait(futures);
           }

@@ -47,7 +47,8 @@ class GraphicsUtil {
       data = grf.hexData;
     }
 
-    final zpl = '^XA'
+    final zpl =
+        '^XA'
         '^FO$x,$y'
         '^GFA,${grf.totalBytes},${grf.totalBytes},${grf.bytesPerRow},$data'
         '^FS'

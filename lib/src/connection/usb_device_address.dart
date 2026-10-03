@@ -31,7 +31,9 @@ class UsbDeviceAddress {
   String encode() {
     final vid = vendorId.toRadixString(16).toUpperCase().padLeft(4, '0');
     final pid = productId.toRadixString(16).toUpperCase().padLeft(4, '0');
-    return serialNumber == null ? 'usb://$vid:$pid' : 'usb://$vid:$pid/$serialNumber';
+    return serialNumber == null
+        ? 'usb://$vid:$pid'
+        : 'usb://$vid:$pid/$serialNumber';
   }
 
   /// Zebra Technologies Corporation's USB-IF-registered vendor ID.

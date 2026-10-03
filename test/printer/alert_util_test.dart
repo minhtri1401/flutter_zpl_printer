@@ -39,9 +39,7 @@ void main() {
 
   group('AlertUtil.getConfiguredAlerts', () {
     test('parses alert response', () async {
-      conn.queueStringResponse(
-        '"PAPER_OUT,TCP,YES,NO,192.168.1.100,9100"',
-      );
+      conn.queueStringResponse('"PAPER_OUT,TCP,YES,NO,192.168.1.100,9100"');
 
       final alerts = await AlertUtil.getConfiguredAlerts(conn);
 

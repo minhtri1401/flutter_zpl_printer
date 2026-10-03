@@ -23,11 +23,10 @@ class UsbDiscovery {
   static Stream<DiscoveredPrinter> enumerate({
     Duration timeout = const Duration(seconds: 2),
     bool includeNonZebra = false,
-  }) =>
-      enumerateWith(
-        platform: _defaultPlatform(),
-        includeNonZebra: includeNonZebra,
-      );
+  }) => enumerateWith(
+    platform: _defaultPlatform(),
+    includeNonZebra: includeNonZebra,
+  );
 
   /// Test-visible variant that accepts an injected [UsbPlatform].
   ///
@@ -77,10 +76,11 @@ class UsbDiscovery {
       connectionType: ConnectionType.usb,
       port: 0,
       discoveryData: {
-        'vendorId':
-            r.vendorId.toRadixString(16).toUpperCase().padLeft(4, '0'),
-        'productId':
-            r.productId.toRadixString(16).toUpperCase().padLeft(4, '0'),
+        'vendorId': r.vendorId.toRadixString(16).toUpperCase().padLeft(4, '0'),
+        'productId': r.productId
+            .toRadixString(16)
+            .toUpperCase()
+            .padLeft(4, '0'),
         if (r.manufacturer != null) 'manufacturer': r.manufacturer!,
         if (r.product != null) 'model': r.product!,
         if (r.serialNumber != null) 'serial': r.serialNumber!,

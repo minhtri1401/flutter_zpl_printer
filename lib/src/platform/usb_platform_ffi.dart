@@ -95,14 +95,21 @@ class UsbPlatformFfi {
     required int timeoutMs,
   }) async {
     final handle = _handles[handleId];
-    if (handle == null) throw ConnectionClosedException('Invalid handle $handleId');
+    if (handle == null) {
+      throw ConnectionClosedException('Invalid handle $handleId');
+    }
 
     final buf = calloc<Uint8>(data.length);
     final transferred = calloc<Int32>();
     try {
       buf.asTypedList(data.length).setAll(0, data);
       final rc = _lib.bulkTransfer(
-        handle, endpoint, buf, data.length, transferred, timeoutMs,
+        handle,
+        endpoint,
+        buf,
+        data.length,
+        transferred,
+        timeoutMs,
       );
       if (rc != _libusbSuccess) throw _mapLibusbError(rc, 'bulk_transfer OUT');
     } finally {
@@ -118,13 +125,20 @@ class UsbPlatformFfi {
     required int timeoutMs,
   }) async {
     final handle = _handles[handleId];
-    if (handle == null) throw ConnectionClosedException('Invalid handle $handleId');
+    if (handle == null) {
+      throw ConnectionClosedException('Invalid handle $handleId');
+    }
 
     final buf = calloc<Uint8>(maxBytes);
     final transferred = calloc<Int32>();
     try {
       final rc = _lib.bulkTransfer(
-        handle, endpoint, buf, maxBytes, transferred, timeoutMs,
+        handle,
+        endpoint,
+        buf,
+        maxBytes,
+        transferred,
+        timeoutMs,
       );
       if (rc == _libusbErrorTimeout && transferred.value == 0) {
         return Uint8List(0); // Soft-timeout = no data; caller polls again.
@@ -155,7 +169,10 @@ class UsbPlatformFfi {
     _lib.resetDevice(handle);
   }
 
-  Future<String?> readStringDescriptor({required int handleId, required int index}) async {
+  Future<String?> readStringDescriptor({
+    required int handleId,
+    required int index,
+  }) async {
     final handle = _handles[handleId];
     if (handle == null || index == 0) return null;
     const bufSize = 255;
@@ -172,7 +189,10 @@ class UsbPlatformFfi {
 
   /// Releases the interface (best-effort; ignores errors) and closes the handle.
   /// Does NOT call libusb_exit — the context is process-singleton.
-  Future<void> closeHandle({required int handleId, required int interfaceNumber}) async {
+  Future<void> closeHandle({
+    required int handleId,
+    required int interfaceNumber,
+  }) async {
     final handle = _handles.remove(handleId);
     if (handle == null) return;
     try {
@@ -201,7 +221,8 @@ class UsbPlatformFfi {
           try {
             final descRc = _lib.getDeviceDescriptor(dev, desc);
             if (descRc != _libusbSuccess) continue;
-            if (desc.ref.idVendor != vendorId || desc.ref.idProduct != productId) {
+            if (desc.ref.idVendor != vendorId ||
+                desc.ref.idProduct != productId) {
               continue;
             }
             // Open to verify serial; skip if mismatch.
@@ -209,7 +230,8 @@ class UsbPlatformFfi {
             if (rc != _libusbSuccess) continue;
             if (serial != null && desc.ref.iSerialNumber != 0) {
               final actual = _readStringFromHandle(
-                handleOut.value, desc.ref.iSerialNumber,
+                handleOut.value,
+                desc.ref.iSerialNumber,
               );
               if (actual != null && actual != serial) {
                 _lib.close(handleOut.value);

@@ -112,25 +112,21 @@ class DiscoveryService {
   /// Discover printers on the local network only (TCP/WiFi).
   static Stream<DiscoveredPrinter> discoverNetwork({
     Duration timeout = const Duration(seconds: 6),
-  }) =>
-      NetworkDiscovery.discover(timeout: timeout);
+  }) => NetworkDiscovery.discover(timeout: timeout);
 
   /// Discover printers via BLE only.
   static Stream<DiscoveredPrinter> discoverBle({
     Duration timeout = const Duration(seconds: 30),
-  }) =>
-      BleDiscovery.discover(timeout: timeout);
+  }) => BleDiscovery.discover(timeout: timeout);
 
   /// Discover printers on a specific subnet via directed broadcast.
   static Stream<DiscoveredPrinter> discoverSubnet(
     String subnetPrefix, {
     Duration timeout = const Duration(seconds: 6),
-  }) =>
-      NetworkDiscovery.directedBroadcast(subnetPrefix, timeout: timeout);
+  }) => NetworkDiscovery.directedBroadcast(subnetPrefix, timeout: timeout);
 
   /// Discover printers via multicast (cross-subnet capable).
   static Stream<DiscoveredPrinter> discoverMulticast({
     Duration timeout = const Duration(seconds: 6),
-  }) =>
-      NetworkDiscovery.multicast(timeout: timeout);
+  }) => NetworkDiscovery.multicast(timeout: timeout);
 }

@@ -82,22 +82,23 @@ class PrinterStatus {
     final isPaperOut = fields[1].trim() == '1';
     final isPaused = fields[2].trim() == '1';
     final labelLengthInDots = int.tryParse(fields[3].trim()) ?? 0;
-    final numberOfFormatsInReceiveBuffer =
-        int.tryParse(fields[4].trim()) ?? 0;
+    final numberOfFormatsInReceiveBuffer = int.tryParse(fields[4].trim()) ?? 0;
     final isReceiveBufferFull = fields[5].trim() == '1';
     final isPartialFormatInProgress = fields[7].trim() == '1';
     final isHeadCold = fields[10].trim() == '1';
     final isHeadTooHot = fields[11].trim() == '1';
     final isHeadOpen = fields[14].trim() == '1';
     final isRibbonOut = fields[15].trim() == '1';
-    final printModeChar =
-        fields[17].trim().isNotEmpty ? fields[17].trim() : '2';
+    final printModeChar = fields[17].trim().isNotEmpty
+        ? fields[17].trim()
+        : '2';
     final labelsRemainingInBatch = int.tryParse(fields[20].trim()) ?? 0;
 
     final printMode = PrinterPrintMode.fromHsChar(printModeChar);
 
     // SDK: isReadyToPrint = NOT(paperOut OR paused OR bufferFull OR headTooHot OR headOpen OR ribbonOut)
-    final isReadyToPrint = !isPaperOut &&
+    final isReadyToPrint =
+        !isPaperOut &&
         !isPaused &&
         !isReceiveBufferFull &&
         !isHeadTooHot &&

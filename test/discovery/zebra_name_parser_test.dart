@@ -30,9 +30,7 @@ void main() {
   group('extractZebraModel', () {
     test('parses ZQ mobile with DPI', () {
       expect(
-        extractZebraModel(
-          ':,.ZBRWMZKN210306204ZTC ZQ620-203dpi CPCLV85.20.24',
-        ),
+        extractZebraModel(':,.ZBRWMZKN210306204ZTC ZQ620-203dpi CPCLV85.20.24'),
         'ZQ620-203dpi',
       );
     });
@@ -59,10 +57,7 @@ void main() {
     });
 
     test('parses ZTC attached without space', () {
-      expect(
-        extractZebraModel('ZBR123ZTCZR638-203dpi V123'),
-        'ZR638-203dpi',
-      );
+      expect(extractZebraModel('ZBR123ZTCZR638-203dpi V123'), 'ZR638-203dpi');
     });
 
     test('returns null without ZTC sentinel', () {
@@ -100,9 +95,7 @@ void main() {
   group('friendlyZebraName', () {
     test('returns "MODEL (SERIAL)" when both extractable', () {
       expect(
-        friendlyZebraName(
-          ':,.ZBRWMZKN210306204ZTC ZQ620-203dpi CPCLV85.20.24',
-        ),
+        friendlyZebraName(':,.ZBRWMZKN210306204ZTC ZQ620-203dpi CPCLV85.20.24'),
         'ZQ620-203dpi (WMZKN210306204)',
       );
     });

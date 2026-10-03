@@ -80,10 +80,7 @@ enum PrinterSgdKey {
   /// Whether Bluetooth hardware is physically installed. Returns
   /// `"yes"` / `"no"`. Distinct from [bluetoothEnable] which controls
   /// the software radio state.
-  deviceBluetoothInstalled(
-    'device.bluetooth_installed',
-    SgdCategory.identity,
-  ),
+  deviceBluetoothInstalled('device.bluetooth_installed', SgdCategory.identity),
 
   /// User-editable friendly name shown in the printer menu and BLE
   /// GAP advertising. Writable.
@@ -184,10 +181,7 @@ enum PrinterSgdKey {
 
   /// Whether a queued label job prevents low-battery shutdown.
   /// Writable.
-  powerLabelQueueShutdown(
-    'power.label_queue.shutdown',
-    SgdCategory.power,
-  ),
+  powerLabelQueueShutdown('power.label_queue.shutdown', SgdCategory.power),
 
   /// Seconds before shutting down at critical battery level. Writable.
   powerLowBatteryTimeout('power.low_battery_timeout', SgdCategory.power),
@@ -275,10 +269,7 @@ enum PrinterSgdKey {
 
   /// Whether the printer auto-reconnects to a previously paired host.
   /// Writable.
-  bluetoothEnableReconnect(
-    'bluetooth.enable_reconnect',
-    SgdCategory.bluetooth,
-  ),
+  bluetoothEnableReconnect('bluetooth.enable_reconnect', SgdCategory.bluetooth),
 
   /// Printer's advertised Bluetooth friendly name. Writable. Distinct
   /// from [deviceFriendlyName] on some firmwares.
@@ -350,10 +341,7 @@ enum PrinterSgdKey {
   wlanPowerSave('wlan.power_save', SgdCategory.wifi),
 
   /// WLAN 802.1X private-key password. Writable.
-  wlanPrivateKeyPassword(
-    'wlan.private_key_password',
-    SgdCategory.wifi,
-  ),
+  wlanPrivateKeyPassword('wlan.private_key_password', SgdCategory.wifi),
 
   /// WLAN security mode (`"open"`, `"wep"`, `"wpa"`, `"WPA-PSK"`, …).
   /// Writable.
@@ -426,22 +414,13 @@ enum PrinterSgdKey {
 
   /// Total dots-printed across the ribbon/media length — lifetime
   /// counter in dot-units.
-  odometerLabelDotLength(
-    'odometer.label_dot_length',
-    SgdCategory.odometer,
-  ),
+  odometerLabelDotLength('odometer.label_dot_length', SgdCategory.odometer),
 
   /// How many times the media-cover latch has been opened.
-  odometerLatchOpenCount(
-    'odometer.latch_open_count',
-    SgdCategory.odometer,
-  ),
+  odometerLatchOpenCount('odometer.latch_open_count', SgdCategory.odometer),
 
   /// Count of detected media / black-mark notches.
-  odometerMediaMarkerCount(
-    'odometer.media_marker_count',
-    SgdCategory.odometer,
-  ),
+  odometerMediaMarkerCount('odometer.media_marker_count', SgdCategory.odometer),
 
   /// RFID tags successfully written (resettable).
   odometerRfidValidResettable(
@@ -456,16 +435,10 @@ enum PrinterSgdKey {
   ),
 
   /// Lifetime label count (non-resettable).
-  odometerTotalLabelCount(
-    'odometer.total_label_count',
-    SgdCategory.odometer,
-  ),
+  odometerTotalLabelCount('odometer.total_label_count', SgdCategory.odometer),
 
   /// Lifetime print length in length-units (inches/mm per firmware).
-  odometerTotalPrintLength(
-    'odometer.total_print_length',
-    SgdCategory.odometer,
-  ),
+  odometerTotalPrintLength('odometer.total_print_length', SgdCategory.odometer),
 
   // ── Actions (`do`-style) ────────────────────────────────────────
 
@@ -478,17 +451,11 @@ enum PrinterSgdKey {
 
   /// Trigger a diagnostic-label print. Dumps current config + sample
   /// patterns. Useful maintenance entrypoint.
-  deviceDiagnosticPrint(
-    'device.diagnostic_print',
-    SgdCategory.action,
-  ),
+  deviceDiagnosticPrint('device.diagnostic_print', SgdCategory.action),
 
   /// Print the configuration label (the big "conf" printout Zebra
   /// ships with every printer).
-  devicePrintOutReport(
-    'device.print_out_report',
-    SgdCategory.action,
-  ),
+  devicePrintOutReport('device.print_out_report', SgdCategory.action),
 
   /// Reboot the printer. Destructive to any in-flight print — guard
   /// with a confirmation dialog.
@@ -550,10 +517,7 @@ enum PrinterSgdKey {
   deviceProtectedMode('device.protected_mode', SgdCategory.security),
 
   /// Front-panel password value. Sensitive.
-  displayPasswordCurrent(
-    'display.password.current',
-    SgdCategory.security,
-  ),
+  displayPasswordCurrent('display.password.current', SgdCategory.security),
 
   // ── Other / Niche ───────────────────────────────────────────────
 

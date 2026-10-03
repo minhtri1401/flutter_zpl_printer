@@ -169,8 +169,9 @@ class ZebraPrinter {
     int? targetWidth,
     ZplDitheringAlgorithm dithering = ZplDitheringAlgorithm.threshold,
     String graphicName = 'IMG',
-  }) =>
-      printLabel(ZplGenerator(commands: [
+  }) => printLabel(
+    ZplGenerator(
+      commands: [
         ZplImageDownload(
           image: imageBytes,
           graphicName: graphicName,
@@ -178,7 +179,9 @@ class ZebraPrinter {
           ditheringAlgorithm: dithering,
         ),
         ZplImageRecall(x: x, y: y, graphicName: graphicName),
-      ]));
+      ],
+    ),
+  );
 
   /// Store an image on the printer as a GRF file.
   Future<void> storeImage(String path, Uint8List imageBytes) =>

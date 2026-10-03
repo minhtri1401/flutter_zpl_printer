@@ -53,11 +53,14 @@ class UsbHotplugEvent {
 class UsbHotplugStream {
   UsbHotplugStream._();
 
-  static const _channel = EventChannel('com.zebra.flutter_zpl_printer/usb/hotplug');
+  static const _channel = EventChannel(
+    'com.zebra.flutter_zpl_printer/usb/hotplug',
+  );
 
   /// Returns a broadcast stream. Multiple listeners are supported; each gets
   /// the same events (Flutter's `receiveBroadcastStream` handles fan-out).
-  static Stream<UsbHotplugEvent> events() => _channel
-      .receiveBroadcastStream()
-      .map((raw) => UsbHotplugEvent.fromMap((raw as Map).cast<Object?, Object?>()));
+  static Stream<UsbHotplugEvent> events() =>
+      _channel.receiveBroadcastStream().map(
+        (raw) => UsbHotplugEvent.fromMap((raw as Map).cast<Object?, Object?>()),
+      );
 }

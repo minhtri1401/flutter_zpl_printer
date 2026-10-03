@@ -26,12 +26,15 @@ void main() {
   setUp(() {
     platform = _FakeUniversalBlePlatform();
     scanStreamController = StreamController<BleDevice>.broadcast();
-    when(() => platform.scanStream)
-        .thenAnswer((_) => scanStreamController.stream);
-    when(() => platform.startScan(
-          scanFilter: any(named: 'scanFilter'),
-          platformConfig: any(named: 'platformConfig'),
-        )).thenAnswer((_) async {});
+    when(
+      () => platform.scanStream,
+    ).thenAnswer((_) => scanStreamController.stream);
+    when(
+      () => platform.startScan(
+        scanFilter: any(named: 'scanFilter'),
+        platformConfig: any(named: 'platformConfig'),
+      ),
+    ).thenAnswer((_) async {});
     when(() => platform.stopScan()).thenAnswer((_) async {});
 
     UniversalBle.setInstance(platform);
@@ -43,16 +46,18 @@ void main() {
 
   group('BleDiscovery.discover', () {
     test('passes null scanFilter when withServices is not provided', () async {
-      final sub =
-          BleDiscovery.discover(timeout: const Duration(milliseconds: 50))
-              .listen((_) {});
+      final sub = BleDiscovery.discover(
+        timeout: const Duration(milliseconds: 50),
+      ).listen((_) {});
       // Let the onListen callback run to completion.
       await Future<void>.delayed(Duration.zero);
 
-      verify(() => platform.startScan(
-            scanFilter: null,
-            platformConfig: any(named: 'platformConfig'),
-          )).called(1);
+      verify(
+        () => platform.startScan(
+          scanFilter: null,
+          platformConfig: any(named: 'platformConfig'),
+        ),
+      ).called(1);
 
       await sub.cancel();
     });
@@ -66,10 +71,12 @@ void main() {
       ).listen((_) {});
       await Future<void>.delayed(Duration.zero);
 
-      final captured = verify(() => platform.startScan(
-            scanFilter: captureAny(named: 'scanFilter'),
-            platformConfig: any(named: 'platformConfig'),
-          )).captured;
+      final captured = verify(
+        () => platform.startScan(
+          scanFilter: captureAny(named: 'scanFilter'),
+          platformConfig: any(named: 'platformConfig'),
+        ),
+      ).captured;
       expect(captured, hasLength(1));
       final filter = captured.single as ScanFilter;
       expect(filter.withServices, uuids);
@@ -88,15 +95,16 @@ void main() {
       ).listen((_) {});
       await Future<void>.delayed(Duration.zero);
 
-      final captured = verify(() => platform.startScan(
-            scanFilter: captureAny(named: 'scanFilter'),
-            platformConfig: any(named: 'platformConfig'),
-          )).captured;
+      final captured = verify(
+        () => platform.startScan(
+          scanFilter: captureAny(named: 'scanFilter'),
+          platformConfig: any(named: 'platformConfig'),
+        ),
+      ).captured;
       final filter = captured.single as ScanFilter;
-      expect(
-        filter.withServices,
-        [ZebraBluetoothConstants.zebraBleServiceUuid],
-      );
+      expect(filter.withServices, [
+        ZebraBluetoothConstants.zebraBleServiceUuid,
+      ]);
 
       await sub.cancel();
     });
@@ -110,14 +118,15 @@ void main() {
       ).listen((_) {});
       await Future<void>.delayed(Duration.zero);
 
-      final captured = verify(() => platform.startScan(
-            scanFilter: captureAny(named: 'scanFilter'),
-            platformConfig: any(named: 'platformConfig'),
-          )).captured;
-      expect(
-        (captured.single as ScanFilter).withServices,
-        [ZebraBluetoothConstants.zebraBleServiceUuid],
-      );
+      final captured = verify(
+        () => platform.startScan(
+          scanFilter: captureAny(named: 'scanFilter'),
+          platformConfig: any(named: 'platformConfig'),
+        ),
+      ).captured;
+      expect((captured.single as ScanFilter).withServices, [
+        ZebraBluetoothConstants.zebraBleServiceUuid,
+      ]);
 
       await sub.cancel();
     });
@@ -131,10 +140,12 @@ void main() {
       ).listen((_) {});
       await Future<void>.delayed(Duration.zero);
 
-      verify(() => platform.startScan(
-            scanFilter: null,
-            platformConfig: any(named: 'platformConfig'),
-          )).called(1);
+      verify(
+        () => platform.startScan(
+          scanFilter: null,
+          platformConfig: any(named: 'platformConfig'),
+        ),
+      ).called(1);
 
       await sub.cancel();
     });

@@ -48,17 +48,20 @@ void main() {
     expect(conn.allWrittenString, contains('^FDHello^FS'));
   });
 
-  test('printImage downloads with ~DG before ^XA, then recalls with ^XG', () async {
-    await printer.printImage(_png(), x: 10, y: 20);
+  test(
+    'printImage downloads with ~DG before ^XA, then recalls with ^XG',
+    () async {
+      await printer.printImage(_png(), x: 10, y: 20);
 
-    final zpl = conn.allWrittenString;
-    expect(zpl, startsWith('~DGIMG,'));
-    expect(zpl.indexOf('~DGIMG,'), lessThan(zpl.indexOf('^XA')));
-    expect(zpl, contains('^FO10,20'));
-    expect(zpl, contains('^XGIMG,1,1^FS'));
-    expect(zpl, isNot(contains(':Z64:'))); // uncompressed hex
-    expect(zpl.trimRight(), endsWith('^XZ'));
-  });
+      final zpl = conn.allWrittenString;
+      expect(zpl, startsWith('~DGIMG,'));
+      expect(zpl.indexOf('~DGIMG,'), lessThan(zpl.indexOf('^XA')));
+      expect(zpl, contains('^FO10,20'));
+      expect(zpl, contains('^XGIMG,1,1^FS'));
+      expect(zpl, isNot(contains(':Z64:'))); // uncompressed hex
+      expect(zpl.trimRight(), endsWith('^XZ'));
+    },
+  );
 
   test('printImage honours graphicName', () async {
     await printer.printImage(_png(), graphicName: 'LOGO');

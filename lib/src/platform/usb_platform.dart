@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
-import 'usb_messages.g.dart' show UsbDeviceRecord, UsbEnumerateFilter, UsbOpenResult;
+import 'usb_messages.g.dart'
+    show UsbDeviceRecord, UsbEnumerateFilter, UsbOpenResult;
 
 /// Abstract seam between high-level USB classes ([UsbConnection],
 /// [UsbDiscovery]) and the concrete MethodChannel + FFI backend.

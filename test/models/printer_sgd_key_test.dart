@@ -7,9 +7,12 @@ void main() {
       final seen = <String, PrinterSgdKey>{};
       for (final key in PrinterSgdKey.values) {
         final prior = seen[key.value];
-        expect(prior, isNull,
-            reason:
-                'Duplicate SGD value "${key.value}" on ${key.name} and ${prior?.name}');
+        expect(
+          prior,
+          isNull,
+          reason:
+              'Duplicate SGD value "${key.value}" on ${key.name} and ${prior?.name}',
+        );
         seen[key.value] = key;
       }
     });
@@ -17,8 +20,11 @@ void main() {
     test('every enum value conforms to SGD naming (lowercase dotted)', () {
       final pattern = RegExp(r'^[a-z][a-z0-9_]*(\.[a-z0-9_]+)+$');
       for (final key in PrinterSgdKey.values) {
-        expect(pattern.hasMatch(key.value), isTrue,
-            reason: '${key.name} has malformed SGD value "${key.value}"');
+        expect(
+          pattern.hasMatch(key.value),
+          isTrue,
+          reason: '${key.name} has malformed SGD value "${key.value}"',
+        );
       }
     });
 

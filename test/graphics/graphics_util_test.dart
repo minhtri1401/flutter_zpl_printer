@@ -36,7 +36,13 @@ void main() {
     });
 
     test('sends ^GF command with compression', () async {
-      await GraphicsUtil.printImage(conn, testPng, x: 50, y: 100, useCompression: true);
+      await GraphicsUtil.printImage(
+        conn,
+        testPng,
+        x: 50,
+        y: 100,
+        useCompression: true,
+      );
 
       final written = conn.allWrittenString;
       expect(written, startsWith('^XA'));
@@ -47,11 +53,7 @@ void main() {
     });
 
     test('sends ^GF command without compression', () async {
-      await GraphicsUtil.printImage(
-        conn,
-        testPng,
-        useCompression: false,
-      );
+      await GraphicsUtil.printImage(conn, testPng, useCompression: false);
 
       final written = conn.allWrittenString;
       expect(written, contains('^GFA,'));
@@ -79,10 +81,7 @@ void main() {
         scaleY: 2,
       );
 
-      expect(
-        conn.allWrittenString,
-        '^XA^FO10,20^XGR:LOGO.GRF,2,2^FS^XZ',
-      );
+      expect(conn.allWrittenString, '^XA^FO10,20^XGR:LOGO.GRF,2,2^FS^XZ');
     });
   });
 }

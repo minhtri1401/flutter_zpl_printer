@@ -18,7 +18,8 @@ class UsbTab extends StatefulWidget {
 }
 
 class _UsbTabState extends State<UsbTab> with AutomaticKeepAliveClientMixin {
-  static final bool _supported = Platform.isMacOS || Platform.isWindows || Platform.isAndroid;
+  static final bool _supported =
+      Platform.isMacOS || Platform.isWindows || Platform.isAndroid;
 
   final _printers = <DiscoveredPrinter>[];
   StreamSubscription<UsbHotplugEvent>? _hotplug;
@@ -34,7 +35,10 @@ class _UsbTabState extends State<UsbTab> with AutomaticKeepAliveClientMixin {
     _refresh();
     _hotplug = UsbHotplugStream.events().listen(
       (_) => _refresh(),
-      onError: (Object _) {}, // Hot-plug is best effort; the Refresh button still works.
+      onError:
+          (
+            Object _,
+          ) {}, // Hot-plug is best effort; the Refresh button still works.
     );
   }
 
@@ -80,7 +84,8 @@ class _UsbTabState extends State<UsbTab> with AutomaticKeepAliveClientMixin {
     if (!_supported) {
       return const EmptyHint(
         icon: Icons.usb_off,
-        message: 'USB printing is not available on this platform.\n'
+        message:
+            'USB printing is not available on this platform.\n'
             'iOS does not give apps USB host access. Use Bluetooth or Wi-Fi.',
       );
     }
@@ -89,19 +94,22 @@ class _UsbTabState extends State<UsbTab> with AutomaticKeepAliveClientMixin {
         if (Platform.isWindows)
           const NoticeCard(
             warning: true,
-            message: 'USB printing failed in our Windows testing, and the cause '
+            message:
+                'USB printing failed in our Windows testing, and the cause '
                 'is not confirmed yet. Use Wi-Fi or Bluetooth on Windows for now. '
                 'Plug/unplug is not detected on Windows: tap Refresh. '
                 'See "Known issues → Windows USB" in the README.',
           ),
         if (Platform.isMacOS)
           const NoticeCard(
-            message: 'USB is experimental: it has not been tested with a printer on '
+            message:
+                'USB is experimental: it has not been tested with a printer on '
                 'macOS yet. Bluetooth and Wi-Fi are tested and work.',
           ),
         if (Platform.isAndroid)
           const NoticeCard(
-            message: 'Android USB is untested, and this release does not bundle '
+            message:
+                'Android USB is untested, and this release does not bundle '
                 'libusb-1.0.so, so connecting will fail. See "Known issues" in the README.',
           ),
         Padding(
@@ -110,7 +118,9 @@ class _UsbTabState extends State<UsbTab> with AutomaticKeepAliveClientMixin {
             children: [
               Expanded(
                 child: Text(
-                  _loading ? 'Looking for USB printers…' : '${_printers.length} attached',
+                  _loading
+                      ? 'Looking for USB printers…'
+                      : '${_printers.length} attached',
                 ),
               ),
               OutlinedButton.icon(

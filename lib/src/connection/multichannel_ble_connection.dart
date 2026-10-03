@@ -19,10 +19,7 @@ class MultichannelBleConnection extends Connection {
   late final BleConnection _printConnection;
   late final BleConnection _statusConnection;
 
-  MultichannelBleConnection(
-    this.deviceId, {
-    super.config,
-  }) {
+  MultichannelBleConnection(this.deviceId, {super.config}) {
     _printConnection = BleConnection(
       deviceId,
       readCharUuid: ZebraBluetoothConstants.dataFromPrinterCharUuid,
@@ -90,13 +87,12 @@ class MultichannelBleConnection extends Connection {
     int? initialTimeout,
     int? readTimeout,
     String? endOfResponseMarker,
-  }) =>
-      _statusConnection.sendAndWaitForResponse(
-        data,
-        initialTimeout: initialTimeout,
-        readTimeout: readTimeout,
-        endOfResponseMarker: endOfResponseMarker,
-      );
+  }) => _statusConnection.sendAndWaitForResponse(
+    data,
+    initialTimeout: initialTimeout,
+    readTimeout: readTimeout,
+    endOfResponseMarker: endOfResponseMarker,
+  );
 
   @override
   Future<Uint8List> sendAndWaitForValidResponse(
@@ -104,11 +100,10 @@ class MultichannelBleConnection extends Connection {
     int? initialTimeout,
     int? readTimeout,
     required ResponseValidator validator,
-  }) =>
-      _statusConnection.sendAndWaitForValidResponse(
-        data,
-        initialTimeout: initialTimeout,
-        readTimeout: readTimeout,
-        validator: validator,
-      );
+  }) => _statusConnection.sendAndWaitForValidResponse(
+    data,
+    initialTimeout: initialTimeout,
+    readTimeout: readTimeout,
+    validator: validator,
+  );
 }

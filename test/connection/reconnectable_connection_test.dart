@@ -29,24 +29,27 @@ void main() {
       expect(conn.reconnectAttempts, 0);
     });
 
-    test('disconnect during write triggers reconnect then throws ReconnectSuccessException', () async {
-      await inner.open();
-      final conn = ReconnectableConnection(
-        inner,
-        maxRetries: 3,
-        initialDelay: Duration.zero,
-      );
+    test(
+      'disconnect during write triggers reconnect then throws ReconnectSuccessException',
+      () async {
+        await inner.open();
+        final conn = ReconnectableConnection(
+          inner,
+          maxRetries: 3,
+          initialDelay: Duration.zero,
+        );
 
-      // Simulate disconnect so next write fails
-      inner.simulateDisconnect();
-      // Queue SGD ping response for reconnect verification
-      inner.queueStringResponse('"ZPL"');
+        // Simulate disconnect so next write fails
+        inner.simulateDisconnect();
+        // Queue SGD ping response for reconnect verification
+        inner.queueStringResponse('"ZPL"');
 
-      expect(
-        () => conn.write(Uint8List.fromList([1, 2, 3])),
-        throwsA(isA<ReconnectSuccessException>()),
-      );
-    });
+        expect(
+          () => conn.write(Uint8List.fromList([1, 2, 3])),
+          throwsA(isA<ReconnectSuccessException>()),
+        );
+      },
+    );
 
     test('reconnect succeeds after N open failures', () async {
       await inner.open();
